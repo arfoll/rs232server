@@ -1,0 +1,30 @@
+INTRO
+
+The Cambridge Audio Azur series HDMI receivers (it seems pre HDMI receivers do not have them) have RS232 serial ports
+that can be used to control most if not all of the functionality.
+
+COMPATIBILITY
+
+Azur 340R
+Azur 540R version 3 (untested but assumed to work)
+Azur 640R (untested but assumed to work)
+
+PROGRAM
+
+The program runs in two parts. A python daemon runs in the background and responds to queries from the cli using dbus.
+The hope is to decouple the two sufficiently so that other clients can be written. The hope is to eventually have the script
+listening to the users media player in order to switch on when neccessary, replace alsa as the volume controller, etc...
+
+INSTALL
+
+requires python2, python-pyserial and dbus
+
+To connect the Amplifier (Azur 340R), use a null modem cable to a serial port or USB->serial controller
+
+USE
+
+example command to mute the amp. You can introspect to get the full output of commands that can be given to the ampserver
+dbus-send --system --type=method_call --dest=uk.co.madeo.ampserver /uk/co/madeo/ampserver  uk.co.madeo.ampserver.mute
+
+THANKS
+Tom Carlson - original creator of the python script to control Azur 340R
