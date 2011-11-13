@@ -1,6 +1,5 @@
 #!/usr/bin/python2
 
-# Copyright (C) 2009 Tom Carlson
 # Copyright (C) 2011 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,65 +16,61 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-import serial
-import time
+import gobject
+gobject.threads_init()
+from dbus import glib
+glib.init_threads()
+import dbus
 
-class CambridgeCLI:
-  # Open serial port for read/write later
-  ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
+AMPSERVER_BUS_NAME = 'uk.co.madeo.ampserver'
+AMPSERVER_BUS_PATH = '/uk/co/madeo/ampserver'
 
+class AmpServerCLI:
   def __init__(self):
-    #Debuggering the serial
-    print self.ser
-    #Just to be sure...
-    self.ser.flushInput()
+    try:
+      bus = dbus.SystemBus()
+      amp = bus.get_object(AMPSERVER_BUS_NAME,
+                           AMPSERVER_BUS_PATH)
+      iface = dbus.Interface(amp, AMPSERVER_BUS_NAME)
+    except:
+      print "could not connect to " + AMPSERVER_BUS_NAME
+      help()
+      #No point carrying on. exit
+      exit(1)
 
   def vol_amp_up(self):
-    self.ser.write ("#1,02\r")
-    time.sleep (0.1)
-    self.ser.write ("#1,02\r")
-    time.sleep (0.1)
-    self.ser.write ("#1,02\r")
-    time.sleep (0.1)
-    self.ser.write ("#1,02\r")
-    time.sleep (0.1)
-    self.ser.write ("#1,02\r")
+    self.iface.volumeup()
 
   def vol_amp_down(self):
-    self.ser.write ("#1,03\r")
-    time.sleep (0.1)
-    self.ser.write ("#1,03\r")
-    time.sleep (0.1)
-    self.ser.write ("#1,03\r")
-    time.sleep (0.1)
-    self.ser.write ("#1,03\r")
-    time.sleep (0.1)
-    self.ser.write ("#1,03\r")
+    self.iface.volumedown()
 
   def vol_amp_mute (self):
-    self.ser.write ("#1,11,01\r")
+    self.iface.mute()
 
   def vol_amp_unmute (self):
-    self.ser.write ("#1,11,00\r")
+    self.iface.unmute()
 
   def amp_off (self):
-    self.ser.write ("#1,01,0\r")
+    self.iface.poweroff()
 
   def amp_on (self):
-    self.ser.write ("#1,01,1\r")
+    self.iface.poweron()
 
   def amp_set_video1 (self):
-    self.ser.write ("#7,01,2\r")
+    self.iface.setinputvideo1()
 
   def amp_set_cdaux (self):
-    self.ser.write ("#7,01,7\r")
+    self.iface.setinputcdaux()
 
 def help ():
-  print "this is the help"
+  print "usage: ampservercli <command>"
+  print "volume controls = up/down/mute/unmute"
+  print "power controls = on/off"
+  print "input controls = video1/cdaux"
 
 if __name__ == "__main__":
   if len(sys.argv) is not 1:
-    amp = CambridgeCLI ()
+    amp = AmpServerCLI()
     if sys.argv[1] == "up":
       amp.vol_amp_up ()
     elif sys.argv[1] == "down":
@@ -88,9 +83,9 @@ if __name__ == "__main__":
       amp.vol_amp_unmute ()
     elif sys.argv[1] == "mute":
       amp.vol_amp_mute ()
-    elif sys.argv[1] == "xbmc":
+    elif sys.argv[1] == "xbmc" or sys.argv[1] == "video1":
       amp.amp_set_video1 ()
-    elif sys.argv[1] == "cd":
+    elif sys.argv[1] == "cd" or sys.argv[1] == "cdaux":
       amp.amp_set_cdaux ()
     else:
       help()

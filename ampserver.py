@@ -25,11 +25,15 @@ import dbus.service
 from dbus.mainloop.glib import DBusGMainLoop
 import logging
 
-AZUR_BUS_NAME = 'uk.co.madeo.ampserver'
-AZUR_BUS_PATH = '/uk/co/madeo/ampserver'
+import azur_cmds
+
+AMPSERVER_BUS_NAME = 'uk.co.madeo.ampserver'
+AMPSERVER_BUS_PATH = '/uk/co/madeo/ampserver'
 LOG_FILENAME = '/tmp/ampserver.log'
 
-class AzurServer:
+logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
+
+class AmpServer:
   ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
 
   def __init__(self):
@@ -37,8 +41,10 @@ class AzurServer:
     print self.ser
     #Just to be sure...
     self.ser.flushInput()
+    logging.debug("Initialising serial port")
 
-  def vol_amp_up(self):
+#TODO: generic call for volume
+  def vol_up(self):
     self.ser.write ("#1,02\r")
     time.sleep (0.1)
     self.ser.write ("#1,02\r")
@@ -48,8 +54,9 @@ class AzurServer:
     self.ser.write ("#1,02\r")
     time.sleep (0.1)
     self.ser.write ("#1,02\r")
+    logging.debug("volume up")
 
-  def vol_amp_down(self):
+  def vol_down(self):
     self.ser.write ("#1,03\r")
     time.sleep (0.1)
     self.ser.write ("#1,03\r")
@@ -59,57 +66,52 @@ class AzurServer:
     self.ser.write ("#1,03\r")
     time.sleep (0.1)
     self.ser.write ("#1,03\r")
+    logging.debug("volume down")
 
-  def vol_amp_mute (self):
-    self.ser.write ("#1,11,01\r")
-
-  def vol_amp_unmute (self):
-    self.ser.write ("#1,11,00\r")
-
-  def amp_off (self):
-    self.ser.write ("#1,01,0\r")
-
-  def amp_on (self):
-    self.ser.write ("#1,01,1\r")
-
-  def amp_set_video1 (self):
-    self.ser.write ("#7,01,2\r")
-
-  def amp_set_cdaux (self):
-    self.ser.write ("#7,01,7\r")
+  def cmd (self, cmd):
+    self.ser.write(azur_cmds.commands[cmd])
+    logging.debug (cmd + " called")
 
 class AmpService(dbus.service.Object):
     def __init__(self):
-        bus_name = dbus.service.BusName(AZUR_BUS_NAME, bus=dbus.SystemBus())
-        dbus.service.Object.__init__(self, bus_name, AZUR_BUS_PATH)
-        self.amp = AzurServer()
+      bus_name = dbus.service.BusName(AMPSERVER_BUS_NAME, bus=dbus.SystemBus())
+      dbus.service.Object.__init__(self, bus_name, AMPSERVER_BUS_PATH)
+      self.amp = AmpServer()
 
-    @dbus.service.method(AZUR_BUS_NAME)
+    @dbus.service.method(AMPSERVER_BUS_NAME)
     def mute(self):
-        self.amp.vol_amp_mute()
+      self.amp.cmd('mute')
 
-    @dbus.service.method(AZUR_BUS_NAME)
+    @dbus.service.method(AMPSERVER_BUS_NAME)
     def unmute(self):
-        self.amp.vol_amp_unmute()
+      self.amp.cmd('unmute')
 
-    @dbus.service.method(AZUR_BUS_NAME)
+    @dbus.service.method(AMPSERVER_BUS_NAME)
     def poweron(self):
-        self.amp.amp_on()
+      self.amp.cmd('poweron')
 
-    @dbus.service.method(AZUR_BUS_NAME)
+    @dbus.service.method(AMPSERVER_BUS_NAME)
     def poweroff(self):
-        self.amp.amp_off()
+      self.amp.cmd('poweroff')
 
-    @dbus.service.method(AZUR_BUS_NAME)
+    @dbus.service.method(AMPSERVER_BUS_NAME)
     def volumedown(self):
-        self.amp.vol_amp_down()
+      self.amp.vol_down()
 
-    @dbus.service.method(AZUR_BUS_NAME)
+    @dbus.service.method(AMPSERVER_BUS_NAME)
     def volumeup(self):
-        self.amp.vol_amp_up()
+      self.amp.vol_up()
+
+    @dbus.service.method(AMPSERVER_BUS_NAME)
+    def setinputvideo1(self):
+      self.amp.cmd('video1')
+
+    @dbus.service.method(AMPSERVER_BUS_NAME)
+    def setinputcdaux(self):
+      self.amp.cmd('cdaux')
 
 DBusGMainLoop(set_as_default=True)
-ampService = AmpService()
+ampserv = AmpService()
 
 logging.debug ("Starting AmpService...")
 loop = gobject.MainLoop()
