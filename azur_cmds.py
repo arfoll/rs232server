@@ -21,8 +21,8 @@ commands = {
   "voldown":  "#1,03\r",
   "mute":     "#1,11,01\r",
   "unmute":   "#1,11,00\r",
-  "poweron":  "#1,01,0\r",
-  "poweroff": "#1,01,1\r",
+  "poweron":  "#1,01,1\r",
+  "poweroff": "#1,01,0\r",
   "video1":   "#7,01,2\r",
   "cdaux":    "#7,01,7\r"
 }
