@@ -28,10 +28,9 @@ AMPSERVER_BUS_PATH = '/uk/co/madeo/ampserver'
 class AmpServerCLI:
   def __init__(self):
     try:
-      bus = dbus.SystemBus()
-      amp = bus.get_object(AMPSERVER_BUS_NAME,
-                           AMPSERVER_BUS_PATH)
-      iface = dbus.Interface(amp, AMPSERVER_BUS_NAME)
+      self.bus = dbus.SystemBus()
+      self.amp = self.bus.get_object(AMPSERVER_BUS_NAME, AMPSERVER_BUS_PATH)
+      self.iface = dbus.Interface(self.amp, AMPSERVER_BUS_NAME)
     except:
       print "could not connect to " + AMPSERVER_BUS_NAME
       help()
