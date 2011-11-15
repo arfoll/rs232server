@@ -23,8 +23,8 @@ commands = {
   "unmute":   "#1,11,00\r",
   "poweron":  "#1,01,1\r",
   "poweroff": "#1,01,0\r",
-  "video1":   "#7,01,2\r",
-  "cdaux":    "#7,01,7\r"
+  "video1":   "#2,01,2\r",
+  "cdaux":    "#2,01,7\r"
 }
 
 #TODO: use input array instead of commands array as above in effort
