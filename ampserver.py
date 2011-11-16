@@ -101,6 +101,10 @@ class AmpService(dbus.service.Object):
     def setinputcdaux(self):
       return self.amp.setinput('cdaux')
 
+    @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
+    def check(self):
+      return True
+
 DBusGMainLoop(set_as_default=True)
 ampserv = AmpService()
 
