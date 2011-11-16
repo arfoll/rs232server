@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=ampserver
+Comment=control amp from rs232 serial port over dbus
+Exec=ampserver.py
+Terminal=false
+Type=Application
+Categories=System;Settings;
+NoDisplay=true
