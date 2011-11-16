@@ -43,34 +43,25 @@ class AmpServer:
     self.ser.flushInput()
     logging.debug("Initialising serial port")
 
-#TODO: generic call for volume
-  def vol_up(self):
-    self.ser.write ("#1,02\r")
-    time.sleep (0.1)
-    self.ser.write ("#1,02\r")
-    time.sleep (0.1)
-    self.ser.write ("#1,02\r")
-    time.sleep (0.1)
-    self.ser.write ("#1,02\r")
-    time.sleep (0.1)
-    self.ser.write ("#1,02\r")
-    logging.debug("volume up")
-
-  def vol_down(self):
-    self.ser.write ("#1,03\r")
-    time.sleep (0.1)
-    self.ser.write ("#1,03\r")
-    time.sleep (0.1)
-    self.ser.write ("#1,03\r")
-    time.sleep (0.1)
-    self.ser.write ("#1,03\r")
-    time.sleep (0.1)
-    self.ser.write ("#1,03\r")
-    logging.debug("volume down")
+  def setinput (self, cmd):
+    try:
+      choseninput = azur_cmds.inputs[cmd]
+      self.ser.write(azur_cmds.inputs[cmd])
+      logging.debug (cmd + " input changed")
+      return True
+    except:
+      logging.debug (cmd + " input change failed")
+      return False
 
   def cmd (self, cmd):
-    self.ser.write(azur_cmds.commands[cmd])
-    logging.debug (cmd + " called")
+    try:
+      chosencmd = azur_cmds.commands[cmd]
+      self.ser.write(azur_cmds.commands[cmd])
+      logging.debug (cmd + " called")
+      return True
+    except:
+      logging.debug (cmd + " call failed")
+      return False
 
 class AmpService(dbus.service.Object):
     def __init__(self):
@@ -78,37 +69,37 @@ class AmpService(dbus.service.Object):
       dbus.service.Object.__init__(self, bus_name, AMPSERVER_BUS_PATH)
       self.amp = AmpServer()
 
-    @dbus.service.method(AMPSERVER_BUS_NAME)
+    @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def mute(self):
-      self.amp.cmd('mute')
+      return self.amp.cmd('mute')
 
-    @dbus.service.method(AMPSERVER_BUS_NAME)
+    @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def unmute(self):
-      self.amp.cmd('unmute')
+      return self.amp.cmd('unmute')
 
-    @dbus.service.method(AMPSERVER_BUS_NAME)
+    @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def poweron(self):
-      self.amp.cmd('poweron')
+      return self.amp.cmd('poweron')
 
-    @dbus.service.method(AMPSERVER_BUS_NAME)
+    @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def poweroff(self):
-      self.amp.cmd('poweroff')
+      return self.amp.cmd('poweroff')
 
-    @dbus.service.method(AMPSERVER_BUS_NAME)
+    @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def volumedown(self):
-      self.amp.vol_down()
+      return self.amp.cmd('voldown')
 
-    @dbus.service.method(AMPSERVER_BUS_NAME)
+    @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def volumeup(self):
-      self.amp.vol_up()
+      return self.amp.cmd('volup')
 
-    @dbus.service.method(AMPSERVER_BUS_NAME)
+    @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def setinputvideo1(self):
-      self.amp.cmd('video1')
+      return self.amp.setinput('video1')
 
-    @dbus.service.method(AMPSERVER_BUS_NAME)
+    @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def setinputcdaux(self):
-      self.amp.cmd('cdaux')
+      return self.amp.setinput('cdaux')
 
 DBusGMainLoop(set_as_default=True)
 ampserv = AmpService()

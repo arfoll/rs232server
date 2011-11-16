@@ -27,10 +27,8 @@ commands = {
   "cdaux":    "#2,01,7\r"
 }
 
-#TODO: use input array instead of commands array as above in effort
-#to make class more generic
-input = {
-  "video1":   "#7,01,2\r",
-  "cdaux":    "#7,01,7\r"
+inputs = {
+  "video1":   "#2,01,2\r",
+  "cdaux":    "#2,01,7\r"
 }
 
