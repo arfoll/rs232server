@@ -30,16 +30,13 @@ import azur_cmds
 AMPSERVER_BUS_NAME = 'uk.co.madeo.ampserver'
 AMPSERVER_BUS_PATH = '/uk/co/madeo/ampserver'
 LOG_FILENAME = '/tmp/ampserver.log'
-
-logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
+LOG_FORMAT = "%(asctime)s %(message)s"
+logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,format=LOG_FORMAT)
 
 class AmpServer:
   ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
 
   def __init__(self):
-    #Debuggering the serial
-    print self.ser
-    #Just to be sure...
     self.ser.flushInput()
     logging.debug("Initialising serial port")
 
