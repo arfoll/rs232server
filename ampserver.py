@@ -25,7 +25,9 @@ import dbus.service
 from dbus.mainloop.glib import DBusGMainLoop
 import logging
 
+#use azur_cmds
 import azur_cmds
+cmds = azur_cmds
 
 AMPSERVER_BUS_NAME = 'uk.co.madeo.ampserver'
 AMPSERVER_BUS_PATH = '/uk/co/madeo/ampserver'
@@ -42,8 +44,8 @@ class AmpServer:
 
   def setinput (self, cmd):
     try:
-      choseninput = azur_cmds.inputs[cmd]
-      self.ser.write(azur_cmds.inputs[cmd])
+      choseninput = cmds.inputs[cmd]
+      self.ser.write(cmds.inputs[cmd])
       logging.debug (cmd + " input changed")
       return True
     except:
@@ -52,8 +54,8 @@ class AmpServer:
 
   def cmd (self, cmd):
     try:
-      chosencmd = azur_cmds.commands[cmd]
-      self.ser.write(azur_cmds.commands[cmd])
+      chosencmd = cmds.commands[cmd]
+      self.ser.write(cmds.commands[cmd])
       logging.debug (cmd + " called")
       return True
     except:
