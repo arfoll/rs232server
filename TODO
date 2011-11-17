@@ -1,0 +1,2 @@
+- configparser config ini file for serial port setup
+- argument for set tty and for tty (writes to config file and reads from stdin at startup)
