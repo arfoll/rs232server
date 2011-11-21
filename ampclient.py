@@ -21,9 +21,11 @@ gobject.threads_init()
 from dbus import glib
 glib.init_threads()
 import dbus
+import time
 
 AMPSERVER_BUS_NAME = 'uk.co.madeo.ampserver'
 AMPSERVER_BUS_PATH = '/uk/co/madeo/ampserver'
+DELAY=0.1
 
 class AmpServerCLI:
   def __init__(self):
@@ -37,11 +39,15 @@ class AmpServerCLI:
       #No point carrying on. exit
       exit(1)
 
-  def vol_amp_up(self):
-    self.iface.volumeup()
+  def vol_amp_up(self, db):
+    for i in range(0, db):
+      time.sleep(DELAY)
+      self.iface.volumeup()
 
-  def vol_amp_down(self):
-    self.iface.volumedown()
+  def vol_amp_down(self, db):
+    for i in range(0, db):
+      time.sleep(DELAY)
+      self.iface.volumedown()
 
   def vol_amp_mute (self):
     self.iface.mute()
@@ -68,12 +74,18 @@ def help ():
   print "input controls = video1/cdaux"
 
 if __name__ == "__main__":
-  if len(sys.argv) is not 1:
+  if len(sys.argv) > 1:
     amp = AmpServerCLI()
     if sys.argv[1] == "up":
-      amp.vol_amp_up ()
+      if len(sys.argv) > 2 and sys.argv[2].isdigit():
+        amp.vol_amp_up (int(sys.argv[2]))
+      else:
+        amp.vol_amp_up (1)
     elif sys.argv[1] == "down":
-      amp.vol_amp_down ()
+      if len(sys.argv) > 2 and sys.argv[2].isdigit():
+        amp.vol_amp_down (int(sys.argv[2]))
+      else:
+        amp.vol_amp_down (1)
     elif sys.argv[1] == "off":
       amp.amp_off ()
     elif sys.argv[1] == "on":
