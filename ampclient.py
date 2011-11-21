@@ -69,7 +69,7 @@ class AmpServerCLI:
 
 def help ():
   print "usage: ampservercli <command>"
-  print "volume controls = up/down/mute/unmute"
+  print "volume controls = up/down/mute/unmute (up/down can be followed by an amount in db)"
   print "power controls = on/off"
   print "input controls = video1/cdaux"
 
