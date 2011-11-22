@@ -41,8 +41,6 @@ class AmpServer:
       chosencmd = cmds.commands[cmd]
       self.ser.write(cmds.commands[cmd])
       logging.debug (cmd + " called")
-      return True
     except:
       logging.debug (cmd + " call failed")
-      return False
 

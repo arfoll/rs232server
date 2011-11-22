@@ -33,35 +33,39 @@ class AmpService(dbus.service.Object):
 
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def mute(self):
-      return self.queue.add('mute')
+      self.queue.add('mute')
 
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def unmute(self):
-      return self.queue.add('unmute')
+      self.queue.add('unmute')
 
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def poweron(self):
-      return self.queue.add('poweron')
+      self.queue.add('poweron')
 
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def poweroff(self):
-      return self.queue.add('poweroff')
+      self.queue.add('poweroff')
 
-    @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
-    def volumedown(self):
-      return self.queue.add('voldown')
+    @dbus.service.method(AMPSERVER_BUS_NAME, 
+                         in_signature='i', out_signature='b')
+    def volumedown(self, db):
+      for i in range(0, db):
+        self.queue.add('voldown')
 
-    @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
-    def volumeup(self):
-      return self.queue.add('volup')
+    @dbus.service.method(AMPSERVER_BUS_NAME,
+                         in_signature='i', out_signature='b')
+    def volumeup(self, db):
+      for i in range(0, db):
+        self.queue.add('volup')
 
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def setinputvideo1(self):
-      return self.queue.add('video1')
+      self.queue.add('video1')
 
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def setinputcdaux(self):
-      return self.queue.add('cdaux')
+      self.queue.add('cdaux')
 
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def check(self):

@@ -39,12 +39,10 @@ class AmpServerCLI:
       exit(1)
 
   def vol_amp_up(self, db):
-    for i in range(0, db):
-      self.iface.volumeup()
+    self.iface.volumeup(db)
 
   def vol_amp_down(self, db):
-    for i in range(0, db):
-      self.iface.volumedown()
+    self.iface.volumedown(db)
 
   def vol_amp_mute (self):
     self.iface.mute()
