@@ -25,7 +25,6 @@ import time
 
 AMPSERVER_BUS_NAME = 'uk.co.madeo.ampserver'
 AMPSERVER_BUS_PATH = '/uk/co/madeo/ampserver'
-DELAY=0.1
 
 class AmpServerCLI:
   def __init__(self):
@@ -41,12 +40,10 @@ class AmpServerCLI:
 
   def vol_amp_up(self, db):
     for i in range(0, db):
-      time.sleep(DELAY)
       self.iface.volumeup()
 
   def vol_amp_down(self, db):
     for i in range(0, db):
-      time.sleep(DELAY)
       self.iface.volumedown()
 
   def vol_amp_mute (self):

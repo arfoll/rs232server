@@ -22,10 +22,9 @@ commands = {
   "mute":     "#1,11,01\r",
   "unmute":   "#1,11,00\r",
   "poweron":  "#1,01,1\r",
-  "poweroff": "#1,01,0\r"
-}
+  "poweroff": "#1,01,0\r",
 
-inputs = {
+#inputs
   "dvd":      "#2,01,1\r",
   "video1":   "#2,01,2\r",
   "tuner":    "#2,01,3\r",
@@ -34,6 +33,6 @@ inputs = {
   "tape":     "#2,01,6\r",
   "cdaux":    "#2,01,7\r",
   "digital":  "#2,04,01\r",
-  "analog":  "#2,04,00\r"
+  "analog":   "#2,04,00\r"
 }
 

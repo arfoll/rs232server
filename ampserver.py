@@ -16,90 +16,52 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-import serial
-import time
 import gobject
 import dbus
 import dbus.service
 from dbus.mainloop.glib import DBusGMainLoop
-import logging
+from ampserver_queue import AmpServerQueue
 
-#use azur_cmds
-import azur_cmds
-cmds = azur_cmds
-
-SERIAL_PORT="/dev/ttyUSB0"
 AMPSERVER_BUS_NAME = 'uk.co.madeo.ampserver'
 AMPSERVER_BUS_PATH = '/uk/co/madeo/ampserver'
-LOG_FILENAME = '/tmp/ampserver.log'
-LOG_FORMAT = "%(asctime)s %(message)s"
-logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,format=LOG_FORMAT)
-
-class AmpServer:
-  ser = serial.Serial(SERIAL_PORT, 9600, timeout=1)
-
-  def __init__(self):
-    self.ser.flushInput()
-    logging.debug("Initialising serial port")
-
-  def setinput (self, cmd):
-    try:
-      choseninput = cmds.inputs[cmd]
-      self.ser.write(cmds.inputs[cmd])
-      logging.debug (cmd + " input changed")
-      return True
-    except:
-      logging.debug (cmd + " input change failed")
-      return False
-
-  def cmd (self, cmd):
-    try:
-      chosencmd = cmds.commands[cmd]
-      self.ser.write(cmds.commands[cmd])
-      logging.debug (cmd + " called")
-      return True
-    except:
-      logging.debug (cmd + " call failed")
-      return False
 
 class AmpService(dbus.service.Object):
     def __init__(self):
       bus_name = dbus.service.BusName(AMPSERVER_BUS_NAME, bus=dbus.SystemBus())
       dbus.service.Object.__init__(self, bus_name, AMPSERVER_BUS_PATH)
-      self.amp = AmpServer()
+      self.queue = AmpServerQueue()
 
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def mute(self):
-      return self.amp.cmd('mute')
+      return self.queue.add('mute')
 
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def unmute(self):
-      return self.amp.cmd('unmute')
+      return self.queue.add('unmute')
 
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def poweron(self):
-      return self.amp.cmd('poweron')
+      return self.queue.add('poweron')
 
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def poweroff(self):
-      return self.amp.cmd('poweroff')
+      return self.queue.add('poweroff')
 
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def volumedown(self):
-      return self.amp.cmd('voldown')
+      return self.queue.add('voldown')
 
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def volumeup(self):
-      return self.amp.cmd('volup')
+      return self.queue.add('volup')
 
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def setinputvideo1(self):
-      return self.amp.setinput('video1')
+      return self.queue.add('video1')
 
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def setinputcdaux(self):
-      return self.amp.setinput('cdaux')
+      return self.queue.add('cdaux')
 
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def check(self):
@@ -108,6 +70,5 @@ class AmpService(dbus.service.Object):
 DBusGMainLoop(set_as_default=True)
 ampserv = AmpService()
 
-logging.debug ("Starting AmpService...")
 loop = gobject.MainLoop()
 loop.run()
