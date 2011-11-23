@@ -1,3 +1,4 @@
 - ampserver : configparser config ini file for serial port setup
 - ampserver : argument for set tty and for tty (writes to config file and reads from stdin at startup)
+
 - ampclient : argument handling to be done by argparse
