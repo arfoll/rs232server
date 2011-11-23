@@ -36,11 +36,14 @@ class AmpServer:
     self.ser.flushInput()
     logging.debug("Initialising serial port")
 
-  def cmd (self, cmd):
+  def cmd (self, cmd, read=False):
     try:
       chosencmd = cmds.commands[cmd]
       self.ser.write(cmds.commands[cmd])
       logging.debug (cmd + " called")
+      if read:
+        code = self.ser.read(100)
+        return code.replace(cmds.replies[cmd], '')
     except:
       logging.debug (cmd + " call failed")
 

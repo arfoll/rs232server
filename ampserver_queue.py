@@ -41,7 +41,11 @@ class AmpServerQueue:
         self.queue.task_done()
         time.sleep(DELAY)
 
-  def add(self, cmd):
-    self.queue.put(cmd, True)
-    # delay here seems to allow the monitor thread to come to life on my single core CPU
-    time.sleep(DELAY)
+  def add(self, cmd, direct=False):
+    if direct:
+      #direct execution allows for return
+      return self.amp.cmd(cmd, True)
+    else:
+      self.queue.put(cmd, True)
+      # delay here seems to allow the monitor thread to come to life on my single core CPU
+      time.sleep(DELAY)

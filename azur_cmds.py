@@ -17,13 +17,14 @@
 # Values have been tested by me to work on a Cambridge Audio Azur 340R, but they should
 # work equaly for a 540R V3 and possible a 640R/650R
 commands = {
+#volume
   "volup":    "#1,02\r",
   "voldown":  "#1,03\r",
   "mute":     "#1,11,01\r",
   "unmute":   "#1,11,00\r",
+#power
   "poweron":  "#1,01,1\r",
   "poweroff": "#1,01,0\r",
-
 #inputs
   "dvd":      "#2,01,1\r",
   "video1":   "#2,01,2\r",
@@ -33,6 +34,15 @@ commands = {
   "tape":     "#2,01,6\r",
   "cdaux":    "#2,01,7\r",
   "digital":  "#2,04,01\r",
-  "analog":   "#2,04,00\r"
+  "analog":   "#2,04,00\r",
+#software
+  "sversion": "#5,01,\r",
+  "pversion": "#5,02,\r"
 }
 
+# dictionary of headers for replies so they can be removed
+replies = {
+#software
+  "sversion": "#10,01,",
+  "pversion": "#10,02,"
+}

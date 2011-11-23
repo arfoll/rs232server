@@ -38,61 +38,72 @@ class AmpServerCLI:
       #No point carrying on. exit
       exit(1)
 
-  def vol_amp_up(self, db):
+  def vol_up(self, db):
     self.iface.volumeup(db)
 
-  def vol_amp_down(self, db):
+  def vol_down(self, db):
     self.iface.volumedown(db)
 
-  def vol_amp_mute (self):
+  def vol_mute(self):
     self.iface.mute()
 
-  def vol_amp_unmute (self):
+  def vol_unmute(self):
     self.iface.unmute()
 
-  def amp_off (self):
+  def power_off(self):
     self.iface.poweroff()
 
-  def amp_on (self):
+  def power_on(self):
     self.iface.poweron()
 
-  def amp_set_video1 (self):
+  def input_video1(self):
     self.iface.setinputvideo1()
 
-  def amp_set_cdaux (self):
+  def input_cdaux(self):
     self.iface.setinputcdaux()
+
+  def get_sversion(self):
+    print self.iface.getsversion()
+
+  def get_pversion(self):
+    print self.iface.getpversion()
 
 def help ():
   print "usage: ampservercli <command>"
   print "volume controls = up/down/mute/unmute (up/down can be followed by an amount in db)"
   print "power controls = on/off"
   print "input controls = video1/cdaux"
+  print "info = sversion/pversion"
 
 if __name__ == "__main__":
   if len(sys.argv) > 1:
     amp = AmpServerCLI()
     if sys.argv[1] == "up":
       if len(sys.argv) > 2 and sys.argv[2].isdigit():
-        amp.vol_amp_up (int(sys.argv[2]))
+        amp.vol_up(int(sys.argv[2]))
       else:
-        amp.vol_amp_up (1)
+        amp.vol_up(1)
     elif sys.argv[1] == "down":
       if len(sys.argv) > 2 and sys.argv[2].isdigit():
-        amp.vol_amp_down (int(sys.argv[2]))
+        amp.vol_down(int(sys.argv[2]))
       else:
-        amp.vol_amp_down (1)
+        amp.vol_down(1)
     elif sys.argv[1] == "off":
-      amp.amp_off ()
+      amp.power_off()
     elif sys.argv[1] == "on":
-      amp.amp_on ()
+      amp.power_on()
     elif sys.argv[1] == "unmute":
-      amp.vol_amp_unmute ()
+      amp.vol_unmute()
     elif sys.argv[1] == "mute":
-      amp.vol_amp_mute ()
+      amp.vol_mute()
     elif sys.argv[1] == "xbmc" or sys.argv[1] == "video1":
-      amp.amp_set_video1 ()
+      amp.input_video1()
     elif sys.argv[1] == "cd" or sys.argv[1] == "cdaux":
-      amp.amp_set_cdaux ()
+      amp.input_cdaux()
+    elif sys.argv[1] == "sversion":
+      amp.get_sversion()
+    elif sys.argv[1] == "pversion":
+      amp.get_pversion()
     else:
       help()
   else:

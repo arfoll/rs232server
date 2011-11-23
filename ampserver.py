@@ -65,6 +65,14 @@ class AmpService(dbus.service.Object):
     def setinputcdaux(self):
       self.queue.add('cdaux')
 
+    @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='s')
+    def getsversion(self):
+      return self.queue.add('sversion', True)
+
+    @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='s')
+    def getpversion(self):
+      return self.queue.add('pversion', True)
+
     @dbus.service.method(AMPSERVER_BUS_NAME)
     def check(self):
       return True
