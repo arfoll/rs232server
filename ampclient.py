@@ -63,9 +63,11 @@ class AmpServerCLI:
     self.iface.setinputcdaux()
 
   def get_sversion(self):
+    self.iface.clear()
     print self.iface.getsversion()
 
   def get_pversion(self):
+    self.iface.clear()
     print self.iface.getpversion()
 
 def help ():

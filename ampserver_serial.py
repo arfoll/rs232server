@@ -26,6 +26,8 @@ cmds = azur_cmds
 SERIAL_PORT="/dev/ttyUSB0"
 LOG_FILENAME = '/tmp/ampserver.log'
 LOG_FORMAT = "%(asctime)s %(message)s"
+CLEARVAL = 1000
+READVAL = 100
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,format=LOG_FORMAT)
 
 class AmpServer:
@@ -38,12 +40,15 @@ class AmpServer:
 
   def cmd (self, cmd, read=False):
     try:
-      chosencmd = cmds.commands[cmd]
-      self.ser.write(cmds.commands[cmd])
-      logging.debug (cmd + " called")
-      if read:
-        code = self.ser.read(100)
-        return code.replace(cmds.replies[cmd], '')
+      if cmd is not "clear":
+        chosencmd = cmds.commands[cmd]
+        self.ser.write(cmds.commands[cmd])
+        logging.debug (cmd + " called")
+        if read:
+          code = self.ser.read(READVAL)
+          return code.replace(cmds.replies[cmd], '')
+      else:
+        self.ser.read(CLEARVAL)
     except:
       logging.debug (cmd + " call failed")
 

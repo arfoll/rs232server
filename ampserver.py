@@ -74,6 +74,10 @@ class AmpService(dbus.service.Object):
       return self.queue.add('pversion', True)
 
     @dbus.service.method(AMPSERVER_BUS_NAME)
+    def clear(self):
+      self.queue.add('clear', True)
+
+    @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='b')
     def check(self):
       return True
 
