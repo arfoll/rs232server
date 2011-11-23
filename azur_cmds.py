@@ -44,5 +44,11 @@ commands = {
 replies = {
 #software
   "sversion": "#10,01,",
-  "pversion": "#10,02,"
+  "pversion": "#10,02,",
+#volume
+  "voldown":   "#6,03,",
+#errors
+  "off":      "#11,01",
+  "wronggrp": "#11,02",
+  "wrongopt": "#11,03"
 }

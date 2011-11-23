@@ -57,6 +57,11 @@ class AmpService(dbus.service.Object):
       for i in range(0, db):
         self.queue.add('volup')
 
+    @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='i')
+    def getvolume(self):
+      self.queue.add('volup', True)
+      return int(self.queue.add('voldown', True))
+
     @dbus.service.method(AMPSERVER_BUS_NAME)
     def setinputvideo1(self):
       self.queue.add('video1')

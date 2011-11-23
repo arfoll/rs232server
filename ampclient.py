@@ -70,6 +70,10 @@ class AmpServerCLI:
     self.iface.clear()
     print self.iface.getpversion()
 
+  def get_volume(self):
+    self.iface.clear()
+    print self.iface.getvolume()
+
 def help ():
   print "usage: ampservercli <command>"
   print "volume controls = up/down/mute/unmute (up/down can be followed by an amount in db)"
@@ -106,6 +110,8 @@ if __name__ == "__main__":
       amp.get_sversion()
     elif sys.argv[1] == "pversion":
       amp.get_pversion()
+    elif sys.argv[1] == "volume":
+      amp.get_volume()
     else:
       help()
   else:
