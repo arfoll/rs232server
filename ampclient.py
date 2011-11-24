@@ -39,15 +39,18 @@ class FuncTranslate:
       'off':      self.amp.power_off,
       'video1':   self.amp.input_video1,
       'cdaux':    self.amp.input_cdaux,
-      'sverion':  self.amp.get_sversion,
+      'sversion':  self.amp.get_sversion,
       'pversion': self.amp.get_pversion
     }
 
   def call(self, cmd, db):
-    if db is not None:
-      self.funcdict[cmd](db)
-    else:
-      self.funcdict[cmd]()
+    try:
+      if db is not None:
+        self.funcdict[cmd](db)
+      else:
+        self.funcdict[cmd]()
+    except:
+      print cmd + " is not a valid function name."
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description=DESCRIPTION)
