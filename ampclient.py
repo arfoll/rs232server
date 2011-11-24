@@ -16,48 +16,50 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
+import argparse
 from ampclient_dbus import AmpClient
 
-def help ():
-  print "usage: ampservercli <command>"
-  print "volume controls = up/down/mute/unmute (up/down can be followed by an amount in db)"
-  print "power controls = on/off"
-  print "input controls = video1/cdaux"
-  print "info = sversion/pversion"
+PROGRAM_VERSION=1.0
+
+DESCRIPTION = "Send commands to ampserver. Commands are :" \
+              "up, down, mute, unmute, on, off, video1, cdaux, sversion, pversion, volume"
+
+class FuncTranslate:
+  def __init__(self, args):
+    self.amp = AmpClient()
+    self.makeFuncDict()
+    self.call(args.cmd, args.db)
+
+  def makeFuncDict(self):
+    self.funcdict = {
+      'up':       self.amp.vol_up,
+      'down':     self.amp.vol_down,
+      'volume':   self.amp.get_volume,
+      'mute':     self.amp.mute,
+      'unmute':   self.amp.unmute,
+      'on':       self.amp.power_on,
+      'off':      self.amp.power_off,
+      'video1':   self.amp.input_video1,
+      'cdaux':    self.amp.input_cdaux,
+      'sverion':  self.amp.get_sversion,
+      'pversion': self.amp.get_pversion
+    }
+
+  def call(self, cmd, db):
+    if db is not None:
+      self.funcdict[cmd](db)
+    else:
+      self.funcdict[cmd]()
 
 if __name__ == "__main__":
-  if len(sys.argv) > 1:
-    amp = AmpClient()
+  parser = argparse.ArgumentParser(version=PROGRAM_VERSION, description=DESCRIPTION)
+  parser.add_argument('cmd', metavar='command',
+                      help='The command to be passed to ampserver')
+  parser.add_argument('--db', '-d', action='store', dest='db', type=int,
+                      help='db change (for up/down commands only)')
+  args = parser.parse_args()
 
-    if sys.argv[1] == "up":
-      if len(sys.argv) > 2 and sys.argv[2].isdigit():
-        amp.vol_up(int(sys.argv[2]))
-      else:
-        amp.vol_up(1)
-    elif sys.argv[1] == "down":
-      if len(sys.argv) > 2 and sys.argv[2].isdigit():
-        amp.vol_down(int(sys.argv[2]))
-      else:
-        amp.vol_down(1)
-    elif sys.argv[1] == "off":
-      amp.power_off()
-    elif sys.argv[1] == "on":
-      amp.power_on()
-    elif sys.argv[1] == "unmute":
-      amp.vol_unmute()
-    elif sys.argv[1] == "mute":
-      amp.vol_mute()
-    elif sys.argv[1] == "xbmc" or sys.argv[1] == "video1":
-      amp.input_video1()
-    elif sys.argv[1] == "cd" or sys.argv[1] == "cdaux":
-      amp.input_cdaux()
-    elif sys.argv[1] == "sversion":
-      amp.get_sversion()
-    elif sys.argv[1] == "pversion":
-      amp.get_pversion()
-    elif sys.argv[1] == "volume":
-      amp.get_volume()
-    else:
-      help()
+  if (args.db is None) or (args.cmd == 'up') or (args.cmd == 'down'):
+    trans = FuncTranslate(args)
   else:
-    help()
+    print "do not specify a DB other than for up/down commands"

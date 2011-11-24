@@ -36,16 +36,16 @@ class AmpClient:
       #No point carrying on. exit
       exit(1)
 
-  def vol_up(self, db):
+  def vol_up(self, db=1):
     self.iface.volumeup(db)
 
-  def vol_down(self, db):
+  def vol_down(self, db=1):
     self.iface.volumedown(db)
 
-  def vol_mute(self):
+  def mute(self):
     self.iface.mute()
 
-  def vol_unmute(self):
+  def unmute(self):
     self.iface.unmute()
 
   def power_off(self):
