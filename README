@@ -5,7 +5,7 @@ that can be used to control most if not all of the functionality.
 
 COMPATIBILITY
 
-Azur 340R
+Azur 340R (tested on SW version 1.3, protocol version 1.1)
 Azur 540R version 3 (untested but assumed to work)
 Azur 640R (untested but assumed to work)
 Azur 650R (unknown but basic protocol appears unchanged from doc)
@@ -23,11 +23,13 @@ requires python2, python-pyserial and dbus
 To connect the Amplifier (Azur 340R), use a null modem cable to a serial port or USB->serial controller
 
 USE
-The ampserver has 3 modes of operation. One is with the cli application provided which also serves as a reference dbus client implementation. Provided with a simple argument it will execute a command using the ampserver over dbus. See ./ampclient.py help
+The ampserver can be started like any python program just run ./ampserver.py. Run ./ampserver.py --help for further info. A tty can be set if ttyUSB0 is not what your amplifier is connected to.
+
+The ampserver has 3 modes of operation. One is with the cli application provided which also serves as a reference dbus client implementation. Provided with a simple argument it will execute a command using the ampserver over dbus. See ./ampclient.py --help
 
 Also provided is an xbmc (eden/11.x) service addon (see http://github.com/arfoll/script.madeo.ampserver)
 
-Example command to mute the amp using dbus-send. You can introspect to get the full output of commands that can be given to the ampserver
+You can also use dbus-send or your own dbus client for ampserver. Here is an example command to mute the amp using dbus-send. You can introspect to get the full output of commands that can be given to the ampserver
 dbus-send --system --type=method_call --dest=uk.co.madeo.ampserver /uk/co/madeo/ampserver  uk.co.madeo.ampserver.mute
 
 THANKS
