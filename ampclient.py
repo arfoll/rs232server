@@ -16,63 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-import gobject
-gobject.threads_init()
-from dbus import glib
-glib.init_threads()
-import dbus
-import time
-
-AMPSERVER_BUS_NAME = 'uk.co.madeo.ampserver'
-AMPSERVER_BUS_PATH = '/uk/co/madeo/ampserver'
-
-class AmpServerCLI:
-  def __init__(self):
-    try:
-      self.bus = dbus.SystemBus()
-      self.amp = self.bus.get_object(AMPSERVER_BUS_NAME, AMPSERVER_BUS_PATH)
-      self.iface = dbus.Interface(self.amp, AMPSERVER_BUS_NAME)
-    except:
-      print "could not connect to " + AMPSERVER_BUS_NAME
-      help()
-      #No point carrying on. exit
-      exit(1)
-
-  def vol_up(self, db):
-    self.iface.volumeup(db)
-
-  def vol_down(self, db):
-    self.iface.volumedown(db)
-
-  def vol_mute(self):
-    self.iface.mute()
-
-  def vol_unmute(self):
-    self.iface.unmute()
-
-  def power_off(self):
-    self.iface.poweroff()
-
-  def power_on(self):
-    self.iface.poweron()
-
-  def input_video1(self):
-    self.iface.setinputvideo1()
-
-  def input_cdaux(self):
-    self.iface.setinputcdaux()
-
-  def get_sversion(self):
-    self.iface.clear()
-    print self.iface.getsversion()
-
-  def get_pversion(self):
-    self.iface.clear()
-    print self.iface.getpversion()
-
-  def get_volume(self):
-    self.iface.clear()
-    print self.iface.getvolume()
+from ampclient_dbus import AmpClient
 
 def help ():
   print "usage: ampservercli <command>"
@@ -83,7 +27,8 @@ def help ():
 
 if __name__ == "__main__":
   if len(sys.argv) > 1:
-    amp = AmpServerCLI()
+    amp = AmpClient()
+
     if sys.argv[1] == "up":
       if len(sys.argv) > 2 and sys.argv[2].isdigit():
         amp.vol_up(int(sys.argv[2]))
