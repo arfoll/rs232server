@@ -33,9 +33,15 @@ class AmpServer:
   logging.debug ("Starting AmpService...")
 
   def __init__(self, tty):
-    self.ser = serial.Serial(tty, 9600, timeout=1)
-    self.ser.flushInput()
-    logging.debug("Initialising serial port")
+    try:
+      self.ser = serial.Serial(tty, 9600, timeout=1)
+      self.ser.flushInput()
+      logging.debug("Initialising serial port")
+    except:
+      message = "Could not open port" + tty
+      print message
+      logging.debug(message)
+      exit(1)
 
   def cmd (self, cmd, read=False):
     try:
