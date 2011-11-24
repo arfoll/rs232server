@@ -17,15 +17,27 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import gobject
+import argparse
 from dbus.mainloop.glib import DBusGMainLoop
 from ampserver_dbus import AmpService
 
 DEFAULT_TTY="/dev/ttyUSB0"
+PROGRAM_VERSION=1.0
+DESCRIPTION = "Listen over dbus for commands to be sent over RS232"
 
-DBusGMainLoop(set_as_default=True)
+if __name__ == "__main__":
+  parser = argparse.ArgumentParser(version=PROGRAM_VERSION, description=DESCRIPTION)
+  parser.add_argument('--tty', '-t', action='store', dest='tty',
+                      help='define which serial tty to use. Default is /dev/ttyUSB0')
 
-tty=DEFAULT_TTY
-ampserv = AmpService(tty)
+  args = parser.parse_args()
 
-loop = gobject.MainLoop()
-loop.run()
+  if args.tty is not None:
+    tty = args.tty
+  else:
+    tty = DEFAULT_TTY
+
+  DBusGMainLoop(set_as_default=True)
+  ampserv = AmpService(tty)
+  loop = gobject.MainLoop()
+  loop.run()
