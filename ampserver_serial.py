@@ -23,7 +23,6 @@ import logging
 import azur_cmds
 cmds = azur_cmds
 
-SERIAL_PORT="/dev/ttyUSB0"
 LOG_FILENAME = '/tmp/ampserver.log'
 LOG_FORMAT = "%(asctime)s %(message)s"
 CLEARVAL = 1000
@@ -32,9 +31,9 @@ logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,format=LOG_FORMAT)
 
 class AmpServer:
   logging.debug ("Starting AmpService...")
-  ser = serial.Serial(SERIAL_PORT, 9600, timeout=1)
 
-  def __init__(self):
+  def __init__(self, tty):
+    self.ser = serial.Serial(tty, 9600, timeout=1)
     self.ser.flushInput()
     logging.debug("Initialising serial port")
 

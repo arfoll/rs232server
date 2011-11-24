@@ -25,10 +25,10 @@ AMPSERVER_BUS_NAME = 'uk.co.madeo.ampserver'
 AMPSERVER_BUS_PATH = '/uk/co/madeo/ampserver'
 
 class AmpService(dbus.service.Object):
-    def __init__(self):
+    def __init__(self, tty):
       bus_name = dbus.service.BusName(AMPSERVER_BUS_NAME, bus=dbus.SystemBus())
       dbus.service.Object.__init__(self, bus_name, AMPSERVER_BUS_PATH)
-      self.queue = AmpServerQueue()
+      self.queue = AmpServerQueue(tty)
 
     @dbus.service.method(AMPSERVER_BUS_NAME)
     def mute(self):

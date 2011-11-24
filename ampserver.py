@@ -20,8 +20,12 @@ import gobject
 from dbus.mainloop.glib import DBusGMainLoop
 from ampserver_dbus import AmpService
 
+DEFAULT_TTY="/dev/ttyUSB0"
+
 DBusGMainLoop(set_as_default=True)
-ampserv = AmpService()
+
+tty=DEFAULT_TTY
+ampserv = AmpService(tty)
 
 loop = gobject.MainLoop()
 loop.run()

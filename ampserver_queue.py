@@ -26,8 +26,8 @@ MAXCMDS=0
 
 class AmpServerQueue:
 
-  def __init__(self):
-    self.amp = AmpServer()
+  def __init__(self, tty):
+    self.amp = AmpServer(tty)
     self.queue = Queue.Queue()
     self.t = Thread(target=self.monitor)
     self.t.daemon = True
