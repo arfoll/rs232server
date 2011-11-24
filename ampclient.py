@@ -19,8 +19,6 @@ import sys
 import argparse
 from ampclient_dbus import AmpClient
 
-PROGRAM_VERSION=1.0
-
 DESCRIPTION = "Send commands to ampserver. Commands are :" \
               "up, down, mute, unmute, on, off, video1, cdaux, sversion, pversion, volume"
 
@@ -52,7 +50,7 @@ class FuncTranslate:
       self.funcdict[cmd]()
 
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser(version=PROGRAM_VERSION, description=DESCRIPTION)
+  parser = argparse.ArgumentParser(description=DESCRIPTION)
   parser.add_argument('cmd', metavar='command',
                       help='The command to be passed to ampserver')
   parser.add_argument('--db', '-d', action='store', dest='db', type=int,

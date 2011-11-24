@@ -22,11 +22,10 @@ from dbus.mainloop.glib import DBusGMainLoop
 from ampserver_dbus import AmpService
 
 DEFAULT_TTY="/dev/ttyUSB0"
-PROGRAM_VERSION=1.0
 DESCRIPTION = "Listen over dbus for commands to be sent over RS232"
 
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser(version=PROGRAM_VERSION, description=DESCRIPTION)
+  parser = argparse.ArgumentParser(description=DESCRIPTION)
   parser.add_argument('--tty', '-t', action='store', dest='tty',
                       help='define which serial tty to use. Default is /dev/ttyUSB0')
 
