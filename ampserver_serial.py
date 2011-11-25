@@ -76,6 +76,10 @@ class AmpServer:
           return code
       else:
         self.ser.flushOutput()
+        waiting = self.ser.inWaiting()
+        print waiting
+        if (waiting > 0):
+          self.ser.read(waiting)
     except:
       logging.debug (cmd + " call failed")
 
