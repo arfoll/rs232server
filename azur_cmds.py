@@ -46,9 +46,11 @@ replies = {
   "sversion": "#10,01,",
   "pversion": "#10,02,",
 #volume
-  "voldown":   "#6,03,",
-#errors
-  "off":      "#11,01",
-  "wronggrp": "#11,02",
-  "wrongopt": "#11,03"
+  "voldown":  "#6,03,"
+}
+
+errors = {
+  "off":      "#11,01\r",
+  "wronggrp": "#11,02\r",
+  "wrongopt": "#11,03\r"
 }

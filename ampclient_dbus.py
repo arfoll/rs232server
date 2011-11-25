@@ -20,6 +20,7 @@ gobject.threads_init()
 from dbus import glib
 glib.init_threads()
 import dbus
+import error_codes
 
 AMPSERVER_BUS_NAME = 'uk.co.madeo.ampserver'
 AMPSERVER_BUS_PATH = '/uk/co/madeo/ampserver'
@@ -35,6 +36,12 @@ class AmpClient:
       help()
       #No point carrying on. exit
       exit(1)
+
+  def printValOrError(self, val):
+    try:
+      return error_codes.codes[int(val)]
+    except:
+      return val
 
   def vol_up(self, db=1):
     self.iface.volumeup(db)
@@ -62,13 +69,16 @@ class AmpClient:
 
   def get_sversion(self):
     self.iface.clear()
-    print self.iface.getsversion()
+    val = self.iface.getsversion()
+    print self.printValOrError(val) 
 
   def get_pversion(self):
     self.iface.clear()
-    print self.iface.getpversion()
+    val = self.iface.getpversion()
+    print self.printValOrError(val)
 
   def get_volume(self):
     self.iface.clear()
-    print self.iface.getvolume()
+    val = self.iface.getvolume()
+    print self.printValOrError(val)
 

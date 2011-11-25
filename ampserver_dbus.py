@@ -30,6 +30,12 @@ class AmpService(dbus.service.Object):
       dbus.service.Object.__init__(self, bus_name, AMPSERVER_BUS_PATH)
       self.queue = AmpServerQueue(tty)
 
+    def checkReturnValueInt(self, val):
+      try:
+        return int(val)
+      except:
+        return -100
+
     @dbus.service.method(AMPSERVER_BUS_NAME)
     def mute(self):
       self.queue.add('mute')
@@ -59,7 +65,7 @@ class AmpService(dbus.service.Object):
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='i')
     def getvolume(self):
       self.queue.add('volup', True)
-      return int(self.queue.add('voldown', True))
+      return self.checkReturnValueInt(self.queue.add('voldown', True))
 
     @dbus.service.method(AMPSERVER_BUS_NAME)
     def setinputvideo1(self):
@@ -71,11 +77,11 @@ class AmpService(dbus.service.Object):
 
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='s')
     def getsversion(self):
-      return self.queue.add('sversion', True)
+      return str(self.queue.add('sversion', True))
 
     @dbus.service.method(AMPSERVER_BUS_NAME, out_signature='s')
     def getpversion(self):
-      return self.queue.add('pversion', True)
+      return str(self.queue.add('pversion', True))
 
     @dbus.service.method(AMPSERVER_BUS_NAME)
     def clear(self):

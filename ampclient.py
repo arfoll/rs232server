@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/env python2
 
 # Copyright (C) 2011 Brendan Le Foll <brendan@fridu.net>
 #
@@ -39,7 +39,7 @@ class FuncTranslate:
       'off':      self.amp.power_off,
       'video1':   self.amp.input_video1,
       'cdaux':    self.amp.input_cdaux,
-      'sversion':  self.amp.get_sversion,
+      'sversion': self.amp.get_sversion,
       'pversion': self.amp.get_pversion
     }
 

@@ -31,6 +31,7 @@ Also provided is an xbmc (eden/11.x) service addon (see http://github.com/arfoll
 
 You can also use dbus-send or your own dbus client for ampserver. Here is an example command to mute the amp using dbus-send. You can introspect to get the full output of commands that can be given to the ampserver
 dbus-send --system --type=method_call --dest=uk.co.madeo.ampserver /uk/co/madeo/ampserver  uk.co.madeo.ampserver.mute
+dbus-send --system --print-reply --type=method_call --dest=uk.co.madeo.ampserver /uk/co/madeo/ampserver  uk.co.madeo.ampserver.getvolume
 
 THANKS
 Tom Carlson - original creator of the python script to control Azur 340R
