@@ -21,7 +21,7 @@ from threading import Thread
 from threading import Timer
 from ampserver_serial import AmpServer
 
-DELAY=0.1
+DELAY=0.05
 MAXCMDS=0
 
 class AmpServerQueue:
@@ -39,7 +39,7 @@ class AmpServerQueue:
         item = self.queue.get(True)
         self.amp.cmd(item)
         self.queue.task_done()
-        time.sleep(DELAY)
+        self.amp.flush()
 
   def add(self, cmd, direct=False):
     if direct:

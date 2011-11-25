@@ -61,7 +61,7 @@ class AmpServer:
       logging.debug("stripping error for " + code)
       return STRIPPING_ERROR
 
-  def cmd (self, cmd, read=False):
+  def cmd(self, cmd, read=False):
     try:
       if cmd is not "clear":
         chosencmd = cmds.commands[cmd]
@@ -77,9 +77,10 @@ class AmpServer:
       else:
         self.ser.flushOutput()
         waiting = self.ser.inWaiting()
-        print waiting
         if (waiting > 0):
           self.ser.read(waiting)
     except:
       logging.debug (cmd + " call failed")
 
+  def flush(self):
+    self.ser.flush()
