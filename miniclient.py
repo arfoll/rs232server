@@ -24,7 +24,7 @@ import sys
 
 AMPSERVER_BUS_NAME = 'uk.co.madeo.ampserver'
 AMPSERVER_BUS_PATH = '/uk/co/madeo/ampserver'
-AMOUNT = 1
+AMOUNT = 2
 
 bus = dbus.SystemBus()
 amp = bus.get_object(AMPSERVER_BUS_NAME, AMPSERVER_BUS_PATH)
