@@ -2,12 +2,12 @@ CC=gcc
 CFLAGS=-g -Wall -I.
 DEPS = 
 PKG_CONFIG=`pkg-config --cflags --libs dbus-1`
-OBJ = miniclient.o
+OBJ = ampclient.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(PKG_CONFIG)
 
-miniclient: $(OBJ)
+ampclient: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(PKG_CONFIG)
 clean:
-	rm -f miniclient.o miniclient
+	rm -f ampclient.o miniclient
