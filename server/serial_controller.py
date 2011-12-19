@@ -20,10 +20,6 @@ import sys
 import serial
 import logging
 
-#use azur_cmds
-import azur_cmds
-cmds = azur_cmds
-
 READVAL = 50
 STRIPPING_ERROR = 999
 
@@ -42,34 +38,13 @@ class SerialController:
       self.serial_logger.error("Could not open " + tty)
       exit(1)
 
-  def findKey(self, val):
-    try:
-      return [k for k, v in cmds.errors.iteritems() if v == val][0]
-    except:  
-      return 0
-
-  def stripErrorCode(self, code):
-    try:
-      code = code.replace('#', '')
-      code = code.replace(',', '')
-      code = code.replace('\n', '')
-      return int(code)
-    except:
-      self.serial_logger.debug("stripping error for " + code)
-      return STRIPPING_ERROR
-
   def cmd(self, cmd, read=False):
     try:
       if cmd is not "clear":
-        chosencmd = cmds.commands[cmd]
-        self.ser.write(cmds.commands[cmd])
+        self.ser.write(cmd)
         self.serial_logger.debug (cmd + " called")
         if read:
           code = self.ser.read(READVAL)
-          if self.findKey(code):
-            return self.stripErrorCode(code) 
-          else:
-            return code.replace(cmds.replies[cmd], '')
           return code
       else:
         self.ser.flushOutput()

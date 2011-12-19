@@ -22,6 +22,8 @@ import logging
 from dbus.mainloop.glib import DBusGMainLoop
 from serial_queue import SerialQueue
 
+import azur_cmds
+
 RS232SERVER_BUS_NAME = 'uk.co.madeo.rs232server'
 AZURSERVER_IFACE = 'uk.co.madeo.rs232server.azur'
 AZURSERVER_BUS_PATH = '/uk/co/madeo/rs232server/azur'
@@ -45,56 +47,78 @@ class AzurService(dbus.service.Object):
     except:
       return -100
 
+  def findKey(self, val):
+    try:
+      return [k for k, v in azur_cmds.errors.iteritems() if v == val][0]
+    except:
+      return 0
+
+  def stripErrorCode(self, code):
+    try:
+      code = code.replace('#', '')
+      code = code.replace(',', '')
+      code = code.replace('\n', '')
+      return int(code)
+    except:
+      self.serial_logger.debug("stripping error for " + code)
+      return STRIPPING_ERROR
+
+  def friendlyReply(self, code):
+    if self.findKey(code):
+      return self.stripErrorCode(code)
+    else:
+      return code.replace(self.cmds.replies[cmd], '')
+
   @dbus.service.method(AZURSERVER_IFACE)
   def mute(self):
-    self.queue.add('mute')
+    self.queue.add(azur_cmds.commands['mute'])
 
   @dbus.service.method(AZURSERVER_IFACE)
   def unmute(self):
-    self.queue.add('unmute')
+    self.queue.add(azur_cmds.commands['unmute'])
 
   @dbus.service.method(AZURSERVER_IFACE)
   def poweron(self):
-    self.queue.add('poweron')
+    self.queue.add(azur_cmds.commands['poweron'])
 
   @dbus.service.method(AZURSERVER_IFACE)
   def poweroff(self):
-    self.queue.add('poweroff')
+    self.queue.add(azur_cmds.commands['poweroff'])
 
   @dbus.service.method(AZURSERVER_IFACE, in_signature='i')
   def volumedown(self, db):
     for i in range(0, db):
-      self.queue.add('voldown')
+      self.queue.add(azur_cmds.commands['voldown'])
 
   @dbus.service.method(AZURSERVER_IFACE, in_signature='i')
   def volumeup(self, db):
     for i in range(0, db):
-      self.queue.add('volup')
+      self.queue.add(azur_cmds.commands['volup'])
 
   @dbus.service.method(AZURSERVER_IFACE, out_signature='i')
   def getvolume(self):
-    self.queue.add('volup', True)
-    return self.checkReturnValueInt(self.queue.add('voldown', True))
+    self.queue.add(azur_cmds.commands['volup'], True)
+    return self.checkReturnValueInt(friendlyReply(self.queue.add(azur_cmds.commands['voldown'], True)))
 
   @dbus.service.method(AZURSERVER_IFACE)
   def setinputvideo1(self):
-    self.queue.add('video1')
+    self.queue.add(azur_cmds.commands['video1'])
 
   @dbus.service.method(AZURSERVER_IFACE)
   def setinputcdaux(self):
-    self.queue.add('cdaux')
+    self.queue.add(azur_cmds.commands['cdaux'])
 
   @dbus.service.method(AZURSERVER_IFACE, out_signature='s')
   def getsversion(self):
-    return str(self.queue.add('sversion', True))
+    return str(friendlyReply(self.queue.add(azur_cmds.commands['sversion'], True)))
 
   @dbus.service.method(AZURSERVER_IFACE, out_signature='s')
   def getpversion(self):
-    return str(self.queue.add('pversion', True))
+    return str(friendlyReply(self.queue.add(azur_cmds.commands['pversion'], True)))
 
   @dbus.service.method(AZURSERVER_IFACE)
   def clear(self):
-    self.queue.add('clear', True)
+    self.queue.add(azur_cmds.commands['clear'], True)
 
   @dbus.service.method(AZURSERVER_IFACE, out_signature='b')
   def check(self):
