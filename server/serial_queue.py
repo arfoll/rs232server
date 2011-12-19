@@ -19,15 +19,15 @@ import time
 import Queue
 from threading import Thread
 from threading import Timer
-from ampserver_serial import AmpServer
+from serial_controller import SerialController
 
 DELAY=0.05
 MAXCMDS=0
 
-class AmpServerQueue:
+class SerialQueue:
 
-  def __init__(self, tty):
-    self.amp = AmpServer(tty)
+  def __init__(self, tty, baud_rate, delay):
+    self.controller = SerialController(tty, baud_rate, delay)
     self.queue = Queue.Queue()
     self.t = Thread(target=self.monitor)
     self.t.daemon = True
@@ -37,14 +37,14 @@ class AmpServerQueue:
     while True:
       if not self.queue.empty():
         item = self.queue.get(True)
-        self.amp.cmd(item)
+        self.controller.cmd(item)
         self.queue.task_done()
-        self.amp.flush()
+        self.controller.flush()
 
   def add(self, cmd, direct=False):
     if direct:
       #direct execution allows for return
-      return self.amp.cmd(cmd, True)
+      return self.controller.cmd(cmd, True)
     else:
       self.queue.put(cmd, True)
       # delay here seems to allow the monitor thread to come to life on my single core CPU

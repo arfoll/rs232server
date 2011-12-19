@@ -23,26 +23,21 @@ import logging
 import azur_cmds
 cmds = azur_cmds
 
-LOG_FILENAME = '/tmp/ampserver.log'
-LOG_FORMAT = "%(asctime)s %(message)s"
 READVAL = 50
-DELAY = 0.1
 STRIPPING_ERROR = 999
-logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,format=LOG_FORMAT)
 
-class AmpServer:
-  logging.debug ("Starting AmpService...")
+class SerialController:
 
-  def __init__(self, tty):
+  serial_logger = logging.getLogger("rs232server.serial")
+
+  def __init__(self, tty, baud_rate, delay):
     try:
-      self.ser = serial.Serial(tty, 9600, timeout=DELAY)
+      self.ser = serial.Serial(tty, baud_rate, delay)
       self.ser.flushInput()
       self.ser.flushOutput()
-      logging.debug("Initialising serial port")
+      self.serial_logger.debug("Initialised " + tty)
     except:
-      message = "Could not open port" + tty
-      print message
-      logging.debug(message)
+      self.serial_logger.error("Could not open " + tty)
       exit(1)
 
   def findKey(self, val):
@@ -58,7 +53,7 @@ class AmpServer:
       code = code.replace('\n', '')
       return int(code)
     except:
-      logging.debug("stripping error for " + code)
+      self.serial_logger.debug("stripping error for " + code)
       return STRIPPING_ERROR
 
   def cmd(self, cmd, read=False):
@@ -66,7 +61,7 @@ class AmpServer:
       if cmd is not "clear":
         chosencmd = cmds.commands[cmd]
         self.ser.write(cmds.commands[cmd])
-        logging.debug (cmd + " called")
+        self.serial_logger.debug (cmd + " called")
         if read:
           code = self.ser.read(READVAL)
           if self.findKey(code):
@@ -80,7 +75,7 @@ class AmpServer:
         if (waiting > 0):
           self.ser.read(waiting)
     except:
-      logging.debug (cmd + " call failed")
+      self.serial_logger.debug (cmd + " call failed")
 
   def flush(self):
     self.ser.flush()

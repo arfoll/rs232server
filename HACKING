@@ -1,0 +1,29 @@
+rs232server hacking documentation
+
+The idea of rs232server is to run a server that listens to Dbus commands. There
+can be multiple services. Each service has its own queue and is defined by the
+tty (rs232 port) that is used to communicate to that appliance.
+
+There are currently two services in rs232server.
+- azurservice - controls an Azur Amplifier/Receiver
+- lgtvservice - controls an LG TV
+
+Dbus commands are received on the /uk/co/madeo/rs232server object. Each service
+then has its own interface that can be used to communicate with that service.
+
+Generic:
+rs232server.py - the server
+serial_queue.py - implements a queue system. One que per service
+rs232.conf - the configuration file
+
+azur_service.py - the azur service connection
+azur_dbus.py - the azur service dbus iface
+
+rs232client
+
+This is the python client, made mostly for documentation and for quick testing
+
+miniclient
+
+This is the recommended client for scripting etc... It is not as feature full
+as the python client, however it is much faster.
