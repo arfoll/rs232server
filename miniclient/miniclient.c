@@ -32,12 +32,13 @@ main (int argc, char **argv)
   DBusMessage *message;
 
   const char* RS232SERVER_BUS_NAME = "uk.co.madeo.rs232server";
-  const char* AZURSERVICE_BUS_NAME = "uk.co.madeo.rs232server.azur";
-  const char* AZURSERVICE_BUS_PATH = "/uk/co/madeo/rs232server/azur";
+  const char* AZURSERVICE_IFACE = "uk.co.madeo.rs232server.azur";
+  const char* AZURSERVICE_OBJ_PATH = "/uk/co/madeo/rs232server/azur";
   const dbus_int32_t db = 2;
 
   /* if we don't get any arguments exit */
   if (argc != 2) {
+    fprintf (stderr, "%s needs an argument!\n", argv[0]);
     exit (1);
   }
 
@@ -59,9 +60,11 @@ main (int argc, char **argv)
   }
 
   /* Construct the message */
-  message = dbus_message_new_method_call (RS232SERVER_BUS_NAME, AZURSERVICE_BUS_PATH, AZURSERVICE_BUS_NAME, method); 
+  message = dbus_message_new_method_call (RS232SERVER_BUS_NAME, AZURSERVICE_OBJ_PATH, AZURSERVICE_IFACE, method); 
   /* append arguments */
   dbus_message_append_args (message, DBUS_TYPE_INT32, &db, DBUS_TYPE_INVALID);
+  /* don't ask for a reply */
+  dbus_message_set_no_reply(message, TRUE);
   /* send message & flush */
   dbus_connection_send (connection, message, NULL);
   dbus_connection_flush(connection);
