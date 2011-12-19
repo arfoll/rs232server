@@ -23,7 +23,7 @@ from dbus.mainloop.glib import DBusGMainLoop
 from serial_queue import SerialQueue
 
 RS232SERVER_BUS_NAME = 'uk.co.madeo.rs232server'
-AZURSERVER_BUS_NAME = 'uk.co.madeo.rs232server.azur'
+AZURSERVER_IFACE = 'uk.co.madeo.rs232server.azur'
 AZURSERVER_BUS_PATH = '/uk/co/madeo/rs232server/azur'
 
 DELAY = 0.1
@@ -45,58 +45,58 @@ class AzurService(dbus.service.Object):
     except:
       return -100
 
-  @dbus.service.method(AZURSERVER_BUS_NAME)
+  @dbus.service.method(AZURSERVER_IFACE)
   def mute(self):
     self.queue.add('mute')
 
-  @dbus.service.method(AZURSERVER_BUS_NAME)
+  @dbus.service.method(AZURSERVER_IFACE)
   def unmute(self):
     self.queue.add('unmute')
 
-  @dbus.service.method(AZURSERVER_BUS_NAME)
+  @dbus.service.method(AZURSERVER_IFACE)
   def poweron(self):
     self.queue.add('poweron')
 
-  @dbus.service.method(AZURSERVER_BUS_NAME)
+  @dbus.service.method(AZURSERVER_IFACE)
   def poweroff(self):
     self.queue.add('poweroff')
 
-  @dbus.service.method(AZURSERVER_BUS_NAME, in_signature='i')
+  @dbus.service.method(AZURSERVER_IFACE, in_signature='i')
   def volumedown(self, db):
     for i in range(0, db):
       self.queue.add('voldown')
 
-  @dbus.service.method(AZURSERVER_BUS_NAME, in_signature='i')
+  @dbus.service.method(AZURSERVER_IFACE, in_signature='i')
   def volumeup(self, db):
     for i in range(0, db):
       self.queue.add('volup')
 
-  @dbus.service.method(AZURSERVER_BUS_NAME, out_signature='i')
+  @dbus.service.method(AZURSERVER_IFACE, out_signature='i')
   def getvolume(self):
     self.queue.add('volup', True)
     return self.checkReturnValueInt(self.queue.add('voldown', True))
 
-  @dbus.service.method(AZURSERVER_BUS_NAME)
+  @dbus.service.method(AZURSERVER_IFACE)
   def setinputvideo1(self):
     self.queue.add('video1')
 
-  @dbus.service.method(AZURSERVER_BUS_NAME)
+  @dbus.service.method(AZURSERVER_IFACE)
   def setinputcdaux(self):
     self.queue.add('cdaux')
 
-  @dbus.service.method(AZURSERVER_BUS_NAME, out_signature='s')
+  @dbus.service.method(AZURSERVER_IFACE, out_signature='s')
   def getsversion(self):
     return str(self.queue.add('sversion', True))
 
-  @dbus.service.method(AZURSERVER_BUS_NAME, out_signature='s')
+  @dbus.service.method(AZURSERVER_IFACE, out_signature='s')
   def getpversion(self):
     return str(self.queue.add('pversion', True))
 
-  @dbus.service.method(AZURSERVER_BUS_NAME)
+  @dbus.service.method(AZURSERVER_IFACE)
   def clear(self):
     self.queue.add('clear', True)
 
-  @dbus.service.method(AZURSERVER_BUS_NAME, out_signature='b')
+  @dbus.service.method(AZURSERVER_IFACE, out_signature='b')
   def check(self):
     return True
 

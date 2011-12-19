@@ -31,6 +31,7 @@ main (int argc, char **argv)
   DBusError error;
   DBusMessage *message;
 
+  const char* RS232SERVER_BUS_NAME = "uk.co.madeo.rs232server";
   const char* AZURSERVICE_BUS_NAME = "uk.co.madeo.rs232server.azur";
   const char* AZURSERVICE_BUS_PATH = "/uk/co/madeo/rs232server/azur";
   const dbus_int32_t db = 2;
@@ -58,7 +59,7 @@ main (int argc, char **argv)
   }
 
   /* Construct the message */
-  message = dbus_message_new_method_call (AZURSERVICE_BUS_NAME, AZURSERVICE_BUS_PATH, AZURSERVICE_BUS_NAME, method); 
+  message = dbus_message_new_method_call (RS232SERVER_BUS_NAME, AZURSERVICE_BUS_PATH, AZURSERVICE_BUS_NAME, method); 
   /* append arguments */
   dbus_message_append_args (message, DBUS_TYPE_INT32, &db, DBUS_TYPE_INVALID);
   /* send message & flush */

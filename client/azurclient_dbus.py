@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
 import gobject
 gobject.threads_init()
 from dbus import glib
@@ -22,19 +23,19 @@ glib.init_threads()
 import dbus
 import error_codes
 
-AZURSERVICE_BUS_NAME = 'uk.co.madeo.rs232server.azur'
-AZURSERVICE_BUS_PATH = '/uk/co/madeo/ampserver/azur'
+RS232SERVER_BUS_NAME = 'uk.co.madeo.rs232server'
+AZURSERVICE_IFACE = 'uk.co.madeo.rs232server.azur'
+AZURSERVICE_OBJ_PATH = '/uk/co/madeo/rs232server/azur'
 
-class AmpClient:
+class AzurClient:
   def __init__(self):
     try:
-      self.bus = dbus.SystemBus()
-      self.amp = self.bus.get_object(AZURSERVICE_BUS_NAME, AZURSERVICE_BUS_PATH)
-      self.iface = dbus.Interface(self.amp, AZURSERVICE_BUS_NAME)
+      bus = dbus.SystemBus()
+      rs232 = bus.get_object(RS232SERVER_BUS_NAME, AZURSERVICE_OBJ_PATH)
+      self.iface = dbus.Interface(rs232, dbus_interface=AZURSERVICE_IFACE)
     except:
-      print "could not connect to " + AZURSERVICE_BUS_NAME
-      help()
-      #No point carrying on. exit
+      print sys.exc_info()
+      print "could not connect to " + RS232SERVER_BUS_NAME
       exit(1)
 
   def printValOrError(self, val):

@@ -17,50 +17,47 @@
 
 import sys
 import argparse
-from ampclient_dbus import AmpClient
+from azurclient_dbus import AzurClient
 
 DESCRIPTION = "Send commands to rs232server. Commands are :" \
               "up, down, mute, unmute, on, off, video1, cdaux, sversion, pversion, volume"
 
 class FuncTranslate:
   def __init__(self, args):
-    self.amp = AmpClient()
+    self.azur = AzurClient()
     self.makeFuncDict()
     self.call(args.cmd, args.db)
 
   def makeFuncDict(self):
     self.funcdict = {
-      'up':       self.amp.vol_up,
-      'down':     self.amp.vol_down,
-      'volume':   self.amp.get_volume,
-      'mute':     self.amp.mute,
-      'unmute':   self.amp.unmute,
-      'on':       self.amp.power_on,
-      'off':      self.amp.power_off,
-      'video1':   self.amp.input_video1,
-      'cdaux':    self.amp.input_cdaux,
-      'sversion': self.amp.get_sversion,
-      'pversion': self.amp.get_pversion
+      'up':       self.azur.vol_up,
+      'down':     self.azur.vol_down,
+      'volume':   self.azur.get_volume,
+      'mute':     self.azur.mute,
+      'unmute':   self.azur.unmute,
+      'on':       self.azur.power_on,
+      'off':      self.azur.power_off,
+      'video1':   self.azur.input_video1,
+      'cdaux':    self.azur.input_cdaux,
+      'sversion': self.azur.get_sversion,
+      'pversion': self.azur.get_pversion
     }
 
   def call(self, cmd, db):
     try:
-      if db is not None:
+      if db is not -1:
         self.funcdict[cmd](db)
       else:
         self.funcdict[cmd]()
     except:
-      print cmd + " is not a valid function name."
+      print ("Not a valid function name.", self.funcdict[cmd])
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description=DESCRIPTION)
   parser.add_argument('cmd', metavar='command',
                       help='The command to be passed to ampserver')
-  parser.add_argument('--db', '-d', action='store', dest='db', type=int,
+  parser.add_argument('--db', '-d', action='store', dest='db', type=int, default=-1,
                       help='db change (for up/down commands only)')
   args = parser.parse_args()
 
-  if (args.db is None) or (args.cmd == 'up') or (args.cmd == 'down'):
-    trans = FuncTranslate(args)
-  else:
-    print "do not specify a DB other than for up/down commands"
+  trans = FuncTranslate(args)
