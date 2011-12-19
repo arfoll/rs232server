@@ -22,17 +22,17 @@ glib.init_threads()
 import dbus
 import error_codes
 
-AMPSERVER_BUS_NAME = 'uk.co.madeo.ampserver'
-AMPSERVER_BUS_PATH = '/uk/co/madeo/ampserver'
+AZURSERVICE_BUS_NAME = 'uk.co.madeo.rs232server.azur'
+AZURSERVICE_BUS_PATH = '/uk/co/madeo/ampserver/azur'
 
 class AmpClient:
   def __init__(self):
     try:
       self.bus = dbus.SystemBus()
-      self.amp = self.bus.get_object(AMPSERVER_BUS_NAME, AMPSERVER_BUS_PATH)
-      self.iface = dbus.Interface(self.amp, AMPSERVER_BUS_NAME)
+      self.amp = self.bus.get_object(AZURSERVICE_BUS_NAME, AZURSERVICE_BUS_PATH)
+      self.iface = dbus.Interface(self.amp, AZURSERVICE_BUS_NAME)
     except:
-      print "could not connect to " + AMPSERVER_BUS_NAME
+      print "could not connect to " + AZURSERVICE_BUS_NAME
       help()
       #No point carrying on. exit
       exit(1)

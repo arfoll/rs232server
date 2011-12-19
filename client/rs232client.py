@@ -19,7 +19,7 @@ import sys
 import argparse
 from ampclient_dbus import AmpClient
 
-DESCRIPTION = "Send commands to ampserver. Commands are :" \
+DESCRIPTION = "Send commands to rs232server. Commands are :" \
               "up, down, mute, unmute, on, off, video1, cdaux, sversion, pversion, volume"
 
 class FuncTranslate:
