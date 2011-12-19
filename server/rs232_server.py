@@ -21,6 +21,7 @@ import argparse
 import logging
 from dbus.mainloop.glib import DBusGMainLoop
 from azur_service import AzurService
+from ConfigParser import SafeConfigParser
 
 LOG_FILENAME = '/tmp/rs232server.log'
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -28,8 +29,7 @@ RS232SERVER_BUS_NAME = 'uk.co.madeo.rs232server'
 DEFAULT_AZURTTY="/dev/ttyUSB0"
 DESCRIPTION = "Listen over dbus for commands to be sent over RS232"
 
-def set_logging(verbose):
-  logger = logging.getLogger("rs232server")
+def configureLogging(verbose, logger):
   logger.setLevel(logging.DEBUG)
   formatter = logging.Formatter(LOG_FORMAT)
   fh = logging.FileHandler(LOG_FILENAME)
@@ -45,20 +45,34 @@ def set_logging(verbose):
   logger.addHandler(ch)
 
 def main():
+  # parse CLI arguments
   parser = argparse.ArgumentParser(description=DESCRIPTION)
-  parser.add_argument('--azurtty', '-at', action='store', dest='azurtty', default=DEFAULT_AZURTTY,
-                      help='define which serial tty to use for azur service. Default is ' + DEFAULT_AZURTTY)
   parser.add_argument('--verbose', '-v', action='store_true', dest='verbose', default=False,
                       help='enables more verbose output')
   parser.add_argument('--development', '-dev', action='store_true', dest='dev', default=False,
                       help='development mode disables some commands that could be dangerous. Read documentation before using')
-
   args = parser.parse_args()
 
-  set_logging(args.verbose)
+  # set up loggin
+  logger = logging.getLogger("rs232server")
+  configureLogging(args.verbose, logger)
 
+  # read configuration file
+  parser = SafeConfigParser()
+  try:
+    parser.read('rs232.conf')
+  except:
+    logger.error('failed to read rs232.conf')
+
+  # start dbus mainloop
   DBusGMainLoop(set_as_default=True)
-  AzurService(args.azurtty)
+
+  # parse configuration file and enable + configure services appropriately
+  try:
+    azurtty = parser.get('azur', 'tty')
+    AzurService(str(azurtty))
+  except:
+    logger.debug('disabled azur service')
 
   loop = gobject.MainLoop()
   loop.run()
