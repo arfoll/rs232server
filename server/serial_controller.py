@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
 import serial
 import logging
 
@@ -32,11 +33,12 @@ class SerialController:
 
   def __init__(self, tty, baud_rate, delay):
     try:
-      self.ser = serial.Serial(tty, baud_rate, delay)
+      self.ser = serial.Serial(tty, baud_rate, timeout=delay)
       self.ser.flushInput()
       self.ser.flushOutput()
-      self.serial_logger.debug("Initialised " + tty)
+      self.serial_logger.debug("Initialised %s with baud rate %d", tty, baud_rate)
     except:
+      self.serial_logger.debug(sys.exc_info())
       self.serial_logger.error("Could not open " + tty)
       exit(1)
 
