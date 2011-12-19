@@ -20,7 +20,7 @@ import dbus
 import dbus.service
 import logging
 from dbus.mainloop.glib import DBusGMainLoop
-from serial_queue import SerialQueue
+from serial_controller import SerialController
 
 import azur_cmds
 
@@ -30,6 +30,7 @@ AZURSERVER_BUS_PATH = '/uk/co/madeo/rs232server/azur'
 
 DELAY = 0.1
 BAUD_RATE = 9600
+STRIPPING_ERROR = 999
 
 class AzurService(dbus.service.Object):
 
@@ -38,7 +39,7 @@ class AzurService(dbus.service.Object):
   def __init__(self, tty):
     bus_name = dbus.service.BusName(RS232SERVER_BUS_NAME, bus=dbus.SystemBus())
     dbus.service.Object.__init__(self, bus_name, AZURSERVER_BUS_PATH)
-    self.queue = SerialQueue(tty, BAUD_RATE, DELAY)
+    self.queue = SerialController(tty, BAUD_RATE, DELAY)
     self.azur_logger.debug("Started Azur Service on " + AZURSERVER_BUS_PATH)
 
   def checkReturnValueInt(self, val):

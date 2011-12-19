@@ -1,6 +1,5 @@
 #!/usr/bin/python2
 
-# Copyright (C) 2009 Tom Carlson
 # Copyright (C) 2011 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,9 +16,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-import serial
+import time
+import Queue
 import logging
+import serial
+from threading import Thread
+from threading import Timer
 
+DELAY=0.05
+MAXCMDS=0
 READVAL = 50
 STRIPPING_ERROR = 999
 
@@ -28,6 +33,15 @@ class SerialController:
   serial_logger = logging.getLogger("rs232server.serial")
 
   def __init__(self, tty, baud_rate, delay):
+    self.setup_serial(tty, baud_rate, delay)
+
+    # set up queue and start queue monitoring thread
+    self.queue = Queue.Queue()
+    self.t = Thread(target=self.monitor)
+    self.t.daemon = True
+    self.t.start()
+
+  def setup_serial(self, tty, baud_rate, delay):
     try:
       self.ser = serial.Serial(tty, baud_rate, timeout=delay)
       self.ser.flushInput()
@@ -54,5 +68,19 @@ class SerialController:
     except:
       self.serial_logger.debug (cmd + " call failed")
 
-  def flush(self):
-    self.ser.flush()
+  def monitor(self):
+    while True:
+      if not self.queue.empty():
+        item = self.queue.get(True)
+        self.cmd(item)
+        self.queue.task_done()
+        self.ser.flush()
+
+  def add(self, cmd, direct=False):
+    if direct:
+      #direct execution allows for return
+      return self.controller.cmd(cmd, True)
+    else:
+      self.queue.put(cmd, True)
+      # delay here seems to allow the monitor thread to come to life on my single core CPU
+      time.sleep(DELAY)
