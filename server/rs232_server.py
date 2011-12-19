@@ -58,7 +58,7 @@ def main():
   set_logging(args.verbose)
 
   DBusGMainLoop(set_as_default=True)
-  azurserv = AzurService(args.azurtty)
+  AzurService(args.azurtty)
 
   loop = gobject.MainLoop()
   loop.run()

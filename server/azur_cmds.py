@@ -46,7 +46,8 @@ replies = {
   "sversion": "#10,01,",
   "pversion": "#10,02,",
 #volume
-  "voldown":  "#6,03,"
+  "voldown":  "#6,03,",
+  "volup":    "#6,02,"
 }
 
 errors = {

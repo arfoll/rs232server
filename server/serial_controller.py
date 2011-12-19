@@ -61,6 +61,7 @@ class SerialController:
           code = self.ser.read(READVAL)
           return code
       else:
+        self.serial_logger.debug ("clearing read buffer")
         self.ser.flushOutput()
         waiting = self.ser.inWaiting()
         if (waiting > 0):
@@ -79,7 +80,7 @@ class SerialController:
   def add(self, cmd, direct=False):
     if direct:
       #direct execution allows for return
-      return self.controller.cmd(cmd, True)
+      return self.cmd(cmd, True)
     else:
       self.queue.put(cmd, True)
       # delay here seems to allow the monitor thread to come to life on my single core CPU
