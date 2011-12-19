@@ -1,9 +1,7 @@
-Restructuring
-- Move ampserver to rs232server with an azureservice implementation
-- Add lgtv service
-
 Major
 
+- Add configuration file to configure tty's services etc...
+- Add lgtv service
 - miniclient: full C client
 
 Minor
