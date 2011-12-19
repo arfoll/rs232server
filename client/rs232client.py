@@ -50,7 +50,7 @@ class FuncTranslate:
       else:
         self.funcdict[cmd]()
     except:
-      print ("Not a valid function name.", self.funcdict[cmd])
+      print "Command %s has no mapped function name", cmd
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description=DESCRIPTION)

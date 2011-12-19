@@ -67,7 +67,7 @@ class SerialController:
         if (waiting > 0):
           self.ser.read(waiting)
     except:
-      self.serial_logger.debug (cmd + " call failed")
+      self.serial_logger.error (cmd + " call failed")
 
   def monitor(self):
     while True:
