@@ -19,9 +19,11 @@ import sys
 import gobject
 import argparse
 import logging
+import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 from azur_service import AzurService
 from alsa_service import AlsaService
+from lgtv_service import LgtvService
 from ConfigParser import SafeConfigParser
 
 LOG_FILENAME = '/tmp/rs232server.log'
@@ -52,6 +54,13 @@ def initServices(parser):
   except:
     logger.debug('disabled azur service')
 
+  # TV Services
+  try:
+    lgtvtty = parser.get('lgtv', 'tty')
+    tvService = LgtvService(str(lgtvtty))
+  except:
+    logger.debug('disabled lgtv service')
+
   try:
     selection = parser.get('alsa', 'selection')
     spdif = parser.get('alsa', 'spdif')
@@ -60,8 +69,6 @@ def initServices(parser):
     AlsaService(int(vol), str(selection), str(spdif), ampService)
   except:
     logger.debug('disabled alsa service')
-
-  # Other Services
 
 def main():
   # parse CLI arguments
@@ -82,9 +89,15 @@ def main():
     parser.read('rs232.conf')
   except:
     logger.error('failed to read rs232.conf')
+    exit(1)
 
   # start dbus mainloop
   DBusGMainLoop(set_as_default=True)
+  try:
+    bus_name = dbus.service.BusName(RS232SERVER_BUS_NAME, bus=dbus.SystemBus())
+  except:
+    logger.error('fatal dbus error')
+    exit(1)
 
   initServices(parser)
 
