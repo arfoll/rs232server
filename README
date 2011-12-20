@@ -35,3 +35,5 @@ dbus-send --system --print-reply --type=method_call --dest=uk.co.madeo.rs232serv
 
 THANKS
 Tom Carlson - original creator of the python script to control Azur 340R
+Jon Smith - blog post on lgtv serial communication
+Suan-Aik Yeo - developer of libLGTV_serial where I get all my lgtv commands from

@@ -32,8 +32,8 @@ class SerialController:
 
   serial_logger = logging.getLogger("rs232server.serial")
 
-  def __init__(self, tty, baud_rate, delay):
-    self.setup_serial(tty, baud_rate, delay)
+  def __init__(self, ser):
+    self.setup_serial(ser)
 
     # set up queue and start queue monitoring thread
     self.queue = Queue.Queue()
@@ -41,16 +41,11 @@ class SerialController:
     self.t.daemon = True
     self.t.start()
 
-  def setup_serial(self, tty, baud_rate, delay):
-    try:
-      self.ser = serial.Serial(tty, baud_rate, timeout=delay)
-      self.ser.flushInput()
-      self.ser.flushOutput()
-      self.serial_logger.debug("Initialised %s with baud rate %d", tty, baud_rate)
-    except:
-      self.serial_logger.debug(sys.exc_info())
-      self.serial_logger.error("Could not open " + tty)
-      exit(1)
+  def setup_serial(self, ser):
+    self.ser = ser
+    self.ser.flushInput()
+    self.ser.flushOutput()
+    self.serial_logger.debug("Initialised %s with baud rate %d", ser.name, ser.baudrate)
 
   def cmd(self, cmd, read=False):
     try:

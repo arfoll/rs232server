@@ -19,8 +19,10 @@ import sys
 import gobject
 import argparse
 import logging
+import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 from azur_service import AzurService
+from lgtv_service import LgtvService
 from ConfigParser import SafeConfigParser
 
 LOG_FILENAME = '/tmp/rs232server.log'
@@ -63,16 +65,34 @@ def main():
     parser.read('rs232.conf')
   except:
     logger.error('failed to read rs232.conf')
+    exit(1)
 
   # start dbus mainloop
   DBusGMainLoop(set_as_default=True)
+  try:
+    bus_name = dbus.service.BusName(RS232SERVER_BUS_NAME, bus=dbus.SystemBus())
+  except:
+    logger.error('fatal dbus error')
+    exit(1)
 
-  # parse configuration file and enable + configure services appropriately
+  # parse configuration file
   try:
     azurtty = parser.get('azur', 'tty')
-    AzurService(str(azurtty))
   except:
+    azurtty = None
     logger.debug('disabled azur service')
+
+  try:
+    lgtvtty = parser.get('lgtv', 'tty')
+  except:
+    lgtvtty = None
+    logger.debug('disabled lgtv service')
+
+  # enable the correct services
+  if azurtty is not None:
+    AzurService(str(azurtty), bus_name)
+  if lgtvtty is not None:
+    LgtvService(str(lgtvtty), bus_name)
 
   loop = gobject.MainLoop()
   loop.run()
