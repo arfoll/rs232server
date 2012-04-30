@@ -38,7 +38,11 @@ class FuncTranslate:
       'on':       self.azur.power_on,
       'off':      self.azur.power_off,
       'video1':   self.azur.input_video1,
+      'video2':   self.azur.input_video2,
+      'video3':   self.azur.input_video3,
       'cdaux':    self.azur.input_cdaux,
+      'headphonemodeon': self.azur.set_headphone_modeon,
+      'headphonemodeoff': self.azur.set_headphone_modeoff,
       'sversion': self.azur.get_sversion,
       'pversion': self.azur.get_pversion
     }
@@ -49,8 +53,10 @@ class FuncTranslate:
         self.funcdict[cmd](db)
       else:
         self.funcdict[cmd]()
-    except:
-      print "Command %s has no mapped function name", cmd
+    except KeyError:
+      print "Command %s has no mapped function name" % cmd
+    except Exception, err:
+      print "Error : %s" %str(err)
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description=DESCRIPTION)

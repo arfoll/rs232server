@@ -21,6 +21,15 @@ import logging
 from dbus.mainloop.glib import DBusGMainLoop
 from serial_controller import SerialController
 
+try:
+    # Attempt to import the pyalsaaudio module.
+    import alsaaudio as alsa
+
+except:
+    print "error : alsaaudio : moduled failed to import\n"
+    print "Debian: Install python-pyalsaaudio"
+    print "Arch:   Install python2-pyalsa"
+
 import azur_cmds
 
 RS232SERVER_BUS_NAME = 'uk.co.madeo.rs232server'
@@ -77,6 +86,20 @@ class AzurService(dbus.service.Object):
     else:
       self.queue.add(azur_cmds.commands[cmd], direct)
 
+  def headphone_mode(self, val):
+    self.azur_logger.debug("headphone mode : %r", val)
+    if val:
+      # todo: read from file/backup xdg?
+      alsa.Mixer('Master').setvolume(int(80))
+      alsa.Mixer('IEC958').setmute(1)
+      self.poweroff()
+    else:
+      alsa.Mixer('Master').setmute(1)
+      alsa.Mixer('IEC958').setmute(0)
+      # check xbmc is running
+      # check if xbmc is playing something
+      self.poweron()
+
   @dbus.service.method(AZURSERVER_IFACE)
   def mute(self):
     self.send_cmd('mute')
@@ -108,6 +131,14 @@ class AzurService(dbus.service.Object):
     self.send_cmd('video1')
 
   @dbus.service.method(AZURSERVER_IFACE)
+  def setinputvideo1(self):
+    self.send_cmd('video2')
+
+  @dbus.service.method(AZURSERVER_IFACE)
+  def setinputvideo1(self):
+    self.send_cmd('video3')
+
+  @dbus.service.method(AZURSERVER_IFACE)
   def setinputcdaux(self):
     self.send_cmd('cdaux')
 
@@ -132,3 +163,10 @@ class AzurService(dbus.service.Object):
   def check(self):
     return True
 
+  @dbus.service.method(AZURSERVER_IFACE)
+  def headphonemodeon(self):
+    self.headphone_mode(True)
+
+  @dbus.service.method(AZURSERVER_IFACE)
+  def headphonemodeoff(self):
+    self.headphone_mode(False)

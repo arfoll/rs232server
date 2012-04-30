@@ -65,6 +65,12 @@ class AzurClient:
   def input_video1(self):
     self.iface.setinputvideo1()
 
+  def input_video2(self):
+    self.iface.setinputvideo2()
+
+  def input_video3(self):
+    self.iface.setinputvideo3()
+
   def input_cdaux(self):
     self.iface.setinputcdaux()
 
@@ -82,4 +88,10 @@ class AzurClient:
     self.iface.clear()
     val = self.iface.getvolume()
     print self.printValOrError(val)
+
+  def set_headphone_modeon(self):
+    self.iface.headphonemodeon()
+
+  def set_headphone_modeoff(self):
+    self.iface.headphonemodeoff()
 
