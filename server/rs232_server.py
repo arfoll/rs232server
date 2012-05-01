@@ -21,12 +21,12 @@ import argparse
 import logging
 from dbus.mainloop.glib import DBusGMainLoop
 from azur_service import AzurService
+from alsa_service import AlsaService
 from ConfigParser import SafeConfigParser
 
 LOG_FILENAME = '/tmp/rs232server.log'
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 RS232SERVER_BUS_NAME = 'uk.co.madeo.rs232server'
-DEFAULT_AZURTTY="/dev/ttyUSB0"
 DESCRIPTION = "Listen over dbus for commands to be sent over RS232"
 
 def configureLogging(verbose, logger):
@@ -44,6 +44,25 @@ def configureLogging(verbose, logger):
   ch.setFormatter(formatter)
   logger.addHandler(ch)
 
+def initServices(parser):
+  # Audio Services
+  try:
+    azurtty = parser.get('azur', 'tty')
+    ampService = AzurService(str(azurtty))
+  except:
+    logger.debug('disabled azur service')
+
+  try:
+    selection = parser.get('alsa', 'selection')
+    spdif = parser.get('alsa', 'spdif')
+    vol = parser.get('alsa', 'vol')
+    # change this to be the default amplifier service
+    AlsaService(int(vol), str(selection), str(spdif), ampService)
+  except:
+    logger.debug('disabled alsa service')
+
+  # Other Services
+
 def main():
   # parse CLI arguments
   parser = argparse.ArgumentParser(description=DESCRIPTION)
@@ -53,7 +72,7 @@ def main():
                       help='development mode disables some commands that could be dangerous. Read documentation before using')
   args = parser.parse_args()
 
-  # set up loggin
+  # set up logging
   logger = logging.getLogger("rs232server")
   configureLogging(args.verbose, logger)
 
@@ -67,12 +86,7 @@ def main():
   # start dbus mainloop
   DBusGMainLoop(set_as_default=True)
 
-  # parse configuration file and enable + configure services appropriately
-  try:
-    azurtty = parser.get('azur', 'tty')
-    AzurService(str(azurtty))
-  except:
-    logger.debug('disabled azur service')
+  initServices(parser)
 
   loop = gobject.MainLoop()
   loop.run()

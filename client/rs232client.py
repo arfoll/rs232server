@@ -18,6 +18,7 @@
 import sys
 import argparse
 from azurclient_dbus import AzurClient
+from alsaclient_dbus import AlsaClient
 
 DESCRIPTION = "Send commands to rs232server. Commands are :" \
               "up, down, mute, unmute, on, off, video1, cdaux, sversion, pversion, volume"
@@ -25,6 +26,7 @@ DESCRIPTION = "Send commands to rs232server. Commands are :" \
 class FuncTranslate:
   def __init__(self, args):
     self.azur = AzurClient()
+    self.alsa = AlsaClient()
     self.makeFuncDict()
     self.call(args.cmd, args.db)
 
@@ -41,8 +43,8 @@ class FuncTranslate:
       'video2':   self.azur.input_video2,
       'video3':   self.azur.input_video3,
       'cdaux':    self.azur.input_cdaux,
-      'headphonemodeon': self.azur.set_headphone_modeon,
-      'headphonemodeoff': self.azur.set_headphone_modeoff,
+      'headphonemodeon': self.alsa.set_headphone_modeon,
+      'headphonemodeoff': self.alsa.set_headphone_modeoff,
       'sversion': self.azur.get_sversion,
       'pversion': self.azur.get_pversion
     }

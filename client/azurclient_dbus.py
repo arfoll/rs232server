@@ -89,9 +89,3 @@ class AzurClient:
     val = self.iface.getvolume()
     print self.printValOrError(val)
 
-  def set_headphone_modeon(self):
-    self.iface.headphonemodeon()
-
-  def set_headphone_modeoff(self):
-    self.iface.headphonemodeoff()
-
