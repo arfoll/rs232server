@@ -30,6 +30,7 @@ AZURSERVICE_OBJ_PATH = '/uk/co/madeo/rs232server/azur'
 DELAY = 0.1
 BAUD_RATE = 9600
 STRIPPING_ERROR = 999
+READVAL = 50
 
 class AzurService(dbus.service.Object):
 
@@ -44,7 +45,7 @@ class AzurService(dbus.service.Object):
       self.azur_logger.error("Could not open " + tty)
       exit(1)
 
-    self.queue = SerialController(ser)
+    self.queue = SerialController(ser, READVAL)
     self.azur_logger.debug("Started Azur Service on %s", AZURSERVICE_OBJ_PATH)
 
   def checkReturnValueInt(self, val):

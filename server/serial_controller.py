@@ -1,6 +1,6 @@
 #!/usr/bin/python2
 
-# Copyright (C) 2011 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011,2012 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,17 +23,17 @@ import serial
 from threading import Thread
 from threading import Timer
 
-DELAY=0.05
-MAXCMDS=0
-READVAL = 50
+DELAY = 0.05
+MAXCMDS = 0
 STRIPPING_ERROR = 999
 
 class SerialController:
 
   serial_logger = logging.getLogger("rs232server.serial")
 
-  def __init__(self, ser):
+  def __init__(self, ser, readval):
     self.setup_serial(ser)
+    self.readval = readval
 
     # set up queue and start queue monitoring thread
     self.queue = Queue.Queue()
@@ -53,7 +53,7 @@ class SerialController:
         self.ser.write(cmd)
         self.serial_logger.debug (cmd + " called")
         if read:
-          code = self.ser.read(READVAL)
+          code = self.ser.read(readval)
           return code
       else:
         self.serial_logger.debug ("clearing read buffer")
