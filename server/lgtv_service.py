@@ -1,6 +1,6 @@
 #!/usr/bin/python2
 
-# Copyright (C) 2011 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011,2012 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ LGTVSERVICE_OBJ_PATH = '/uk/co/madeo/rs232server/lgtv'
 DELAY = 1
 BAUD_RATE = 9600
 BYTESIZE = 8
+READVAL = 10
 
 class LgtvService(dbus.service.Object):
 
@@ -46,12 +47,12 @@ class LgtvService(dbus.service.Object):
       self.lgtv_logger.error("Could not open " + tty)
       exit(1)
 
-    self.queue = SerialController(ser)
+    self.queue = SerialController(ser, READVAL)
     self.lgtv_logger.debug("Started LGTV Service on %s", LGTVSERVICE_OBJ_PATH)
 
   def send_cmd(self, cmd, direct=False):
     self.lgtv_logger.debug("sent command : %s", cmd)
-    self.queue.add(lgtv_cmds.commands[cmd], direct)
+    self.queue.add(lgtv_cmds.commands[cmd] + b'\r', direct)
 
   @dbus.service.method(LGTVSERVICE_IFACE)
   def poweroff(self):
@@ -60,3 +61,15 @@ class LgtvService(dbus.service.Object):
   @dbus.service.method(LGTVSERVICE_IFACE)
   def poweron(self):
     self.send_cmd('poweron')
+
+  @dbus.service.method(LGTVSERVICE_IFACE)
+  def mute(self):
+    self.send_cmd('mute')
+
+  @dbus.service.method(LGTVSERVICE_IFACE)
+  def unmute(self):
+    self.send_cmd('unmute')
+
+  @dbus.service.method(LGTVSERVICE_IFACE)
+  def powerstatus(self):
+    return self.send_cmd('powerstatus', True)

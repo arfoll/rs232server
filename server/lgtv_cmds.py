@@ -1,4 +1,4 @@
-# Copyright (C) 2011 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011, 2012 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,5 +20,11 @@ commands = {
   'unmute'        : "ke 00 01",
 #power
   'poweroff'      : "ka 00 00",
-  'poweron'       : "ka 00 01"
+  'poweron'       : "ka 00 01",
+  'powerstatus'   : "ka 00 ff"
+}
+
+responses = {
+  "off"           : "a 00 OK00x",
+  "on"            : "a 01 OK01x"
 }

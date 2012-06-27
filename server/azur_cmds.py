@@ -1,4 +1,4 @@
-# Copyright (C) 2011 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011,2012 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 
 # Values taken from the 340R/540R V3 specification from http://www.cambridgeaudio.com
 # Values have been tested by me to work on a Cambridge Audio Azur 340R, but they should
-# work equaly for a 540R V3 and possible a 640R/650R
+# work equaly for a 540R V3 and possibly 640R/650R/551R
 commands = {
 #volume
   "volup":    "#1,02\r",
