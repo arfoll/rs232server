@@ -43,6 +43,11 @@ commands = {
   "osdleft":  "#1,17\r",
   "osdright": "#1,18\r",
   "osdenter": "#1,19\r",
+#treble/bass
+  "trebleup":   "#1,06\r",
+  "trebledown": "#1,07\r",
+  "bassup":     "#1,04\r",
+  "bassdown":   "#1,05\r",
 #software
   "sversion": "#5,01,\r",
   "pversion": "#5,02,\r"
