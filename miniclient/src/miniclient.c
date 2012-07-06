@@ -48,12 +48,12 @@ print_help ()
 }
 
 int
-send_message_via_dbus (char *method, char *obj, char *iface)
+send_message_via_dbus (const char *method, const int repeat, char *obj, char *iface)
 {
   DBusConnection *connection;
   DBusError error;
   DBusMessage *message;
-  const dbus_int32_t repeat = 1;
+//  const dbus_int32_t repeat = 1;
   const dbus_bool_t reply = 0;
 
   dbus_error_init (&error);
@@ -84,15 +84,15 @@ send_message_via_dbus (char *method, char *obj, char *iface)
 }
 
 int
-send_azur_service (char *method)
+send_azur_service (const char *method, const int repeat)
 {
-  return send_message_via_dbus (method, AZURSERVICE_OBJ_PATH, AZURSERVICE_IFACE);
+  return send_message_via_dbus (method, repeat, AZURSERVICE_OBJ_PATH, AZURSERVICE_IFACE);
 }
 
 int
-send_alsa_service (char *method)
+send_alsa_service (const char *method, const int repeat)
 {
-  return send_message_via_dbus (method, ALSASERVICE_OBJ_PATH, ALSASERVICE_IFACE);  
+  return send_message_via_dbus (method, repeat, ALSASERVICE_OBJ_PATH, ALSASERVICE_IFACE);  
 }
 
 int
@@ -121,19 +121,19 @@ osd_direct ()
   while((c=getchar())!= 'e')
     switch (c) {
       case 72:
-        send_azur_service("osdup");
+        send_azur_service("osdup", 1);
         break;
       case 80:
-        send_azur_service("osddown");
+        send_azur_service("osddown", 1);
         break;
       case 77:
-        send_azur_service("osdleft");
+        send_azur_service("osdleft", 1);
         break;
       case 75:
-        send_azur_service("osdright");
+        send_azur_service("osdright", 1);
         break;
       case 13:
-        send_azur_service("osdenter");
+        send_azur_service("osdenter", 1);
         break;
       default:
         break;
@@ -146,13 +146,21 @@ osd_direct ()
 }
 
 int
-main (int argc, char **argv)
+main (const int argc, const char **argv)
 {
+  int repeat;
+
   /* if we don't get any arguments exit */
-  if (argc != 2) {
+  if (argc < 2) {
     fprintf (stderr, "%s needs a single argument!\n", argv[0]);
     print_help();
     return (ARG_PARSE_ERROR);
+  }
+
+  if (argc == 2) {
+    repeat = 1;
+  } else {
+    repeat = atoi(argv[2]);
   }
 
   char *str = argv[1];
@@ -160,7 +168,7 @@ main (int argc, char **argv)
   if (strcmp(str, "osd") == 0)
       return osd_direct();
   else {
-      return send_azur_service(str);
+      return send_azur_service(str, repeat);
   }
 /*  else {
       print_help();
