@@ -76,7 +76,7 @@ def main():
   # read configuration file
   parser = SafeConfigParser()
   try:
-    parser.read('rs232.conf')
+    parser.readfp(open('/etc/rs232.conf'))
   except:
     logger.error('failed to read rs232.conf')
     exit(1)

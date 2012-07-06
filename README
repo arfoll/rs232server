@@ -26,6 +26,8 @@ To connect the Amplifier (Azur 340R), use a null modem cable to a serial port or
 USE
 The ampserver can be started like any python program just run ./ampserver.py. Run ./ampserver.py --help for further info. A tty can be set if ttyUSB0 is not what your amplifier is connected to.
 
+You will need to place rs232.conf in /etc and configure the correct ttys for the services. To disable a service simply comment out the service in the .conf
+
 The ampserver has 3 modes of operation. One is with the cli application provided which also serves as a reference dbus client implementation. Provided with a simple argument it will execute a command using the ampserver over dbus. See ./ampclient.py --help
 
 Also provided is an xbmc (eden/11.x) service addon (see http://github.com/arfoll/script.madeo.ampserver)
