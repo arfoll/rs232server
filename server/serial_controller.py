@@ -48,18 +48,21 @@ class SerialController:
     self.serial_logger.debug("Initialised %s with baud rate %d", ser.name, ser.baudrate)
 
   def cmd(self, cmd, read=False):
-    if cmd is not "clear":
-      self.ser.write(cmd)
-      self.serial_logger.debug (cmd.rstrip() + " called")
-      if read:
-        code = self.ser.read(self.readval)
-        return code
-    else:
-      self.serial_logger.debug ("clearing read buffer")
-      self.ser.flushOutput()
-      waiting = self.ser.inWaiting()
-      if (waiting > 0):
-        self.ser.read(waiting)
+    try:
+      if cmd is not "clear":
+        self.ser.write(cmd)
+        self.serial_logger.debug (cmd.rstrip() + " called")
+        if read:
+          code = self.ser.read(readval)
+          return code
+      else:
+        self.serial_logger.debug ("clearing read buffer")
+        self.ser.flushOutput()
+        waiting = self.ser.inWaiting()
+        if (waiting > 0):
+          self.ser.read(waiting)
+    except:
+      self.serial_logger.error (cmd.rstrip() + " call failed")
 
   def monitor(self):
     while True:

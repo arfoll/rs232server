@@ -86,10 +86,27 @@ def main():
   try:
     bus_name = dbus.service.BusName(RS232SERVER_BUS_NAME, bus=dbus.SystemBus())
   except:
-    logger.error('dbus error - check configuration')
+    logger.error('fatal dbus error')
     exit(1)
 
-  initServices(parser, logger, bus_name)
+  # parse configuration file
+  try:
+    azurtty = parser.get('azur', 'tty')
+  except:
+    azurtty = None
+    logger.debug('disabled azur service')
+
+  try:
+    lgtvtty = parser.get('lgtv', 'tty')
+  except:
+    lgtvtty = None
+    logger.debug('disabled lgtv service')
+
+  # enable the correct services
+  if azurtty is not None:
+    AzurService(str(azurtty), bus_name)
+  if lgtvtty is not None:
+    LgtvService(str(lgtvtty), bus_name)
 
   loop = gobject.MainLoop()
   loop.run()
