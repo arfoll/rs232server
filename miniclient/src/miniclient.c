@@ -20,6 +20,8 @@
  */
 
 #include <stdio.h>
+#include <termios.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <dbus/dbus.h>
@@ -39,19 +41,20 @@
 #define MAX_STR_SIZE 30
 
 void
-print_help()
+print_help ()
 {
   fprintf(stdout, "miniclient for rs232server\n");
-  fprintf(stdout, "Commands supported are : up, down, headphonemodeon, headphonemodeoff\n");
+  fprintf(stdout, "Commands supported are : volup, voldown, osd\n");
 }
 
 int
-send_message_via_dbus(char *method, char *obj, char *iface)
+send_message_via_dbus (char *method, char *obj, char *iface)
 {
   DBusConnection *connection;
   DBusError error;
   DBusMessage *message;
-  const dbus_int32_t db = 2;
+  const dbus_int32_t repeat = 1;
+  const dbus_bool_t reply = 0;
 
   dbus_error_init (&error);
 
@@ -63,9 +66,9 @@ send_message_via_dbus(char *method, char *obj, char *iface)
   }
 
   /* Construct the message */
-  message = dbus_message_new_method_call (RS232SERVER_BUS_NAME, obj, iface, method);
+  message = dbus_message_new_method_call (RS232SERVER_BUS_NAME, obj, iface, "send_cmd");
   /* append arguments */
-  dbus_message_append_args (message, DBUS_TYPE_INT32, &db, DBUS_TYPE_INVALID);
+  dbus_message_append_args (message, DBUS_TYPE_STRING, &method, DBUS_TYPE_INT32, &repeat, DBUS_TYPE_BOOLEAN, &reply, DBUS_TYPE_INVALID);
   /* don't ask for a reply */
   dbus_message_set_no_reply(message, TRUE);
   /* send message & flush */
@@ -81,15 +84,65 @@ send_message_via_dbus(char *method, char *obj, char *iface)
 }
 
 int
-send_azur_service(char *method)
+send_azur_service (char *method)
 {
   return send_message_via_dbus (method, AZURSERVICE_OBJ_PATH, AZURSERVICE_IFACE);
 }
 
 int
-send_alsa_service(char *method)
+send_alsa_service (char *method)
 {
   return send_message_via_dbus (method, ALSASERVICE_OBJ_PATH, ALSASERVICE_IFACE);  
+}
+
+int
+osd_direct ()
+{
+  int c;
+  static struct termios oldt, newt;
+
+  /* tcgetattr gets the parameters of the current terminal
+     STDIN_FILENO will tell tcgetattr that it should write the settings
+     of stdin to oldt*/
+  tcgetattr(STDIN_FILENO, &oldt);
+
+  /* Now the settings will be copied */
+  newt = oldt;
+
+  /* ICANON normally takes care that one line at a time will be processed
+     that means it will return if it sees a "\n" or an EOF or an EOL */
+  newt.c_lflag &= ~(ICANON);          
+
+  /* Those new settings will be set to STDIN
+     TCSANOW tells tcsetattr to change attributes immediately */
+  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+
+  /* 'e' ends input. Notice that EOF is also turned off in the non-canonical mode */
+  while((c=getchar())!= 'e')
+    switch (c) {
+      case 72:
+        send_azur_service("osdup");
+        break;
+      case 80:
+        send_azur_service("osddown");
+        break;
+      case 77:
+        send_azur_service("osdleft");
+        break;
+      case 75:
+        send_azur_service("osdright");
+        break;
+      case 13:
+        send_azur_service("osdenter");
+        break;
+      default:
+        break;
+    }
+
+  /* Restore the old settings */
+  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+
+  return SUCCESS;
 }
 
 int
@@ -102,23 +155,15 @@ main (int argc, char **argv)
     return (ARG_PARSE_ERROR);
   }
 
-  char method[MAX_STR_SIZE];
   char *str = argv[1];
 
-  if (strcmp(str, "up") == 0) {
-      strcpy(method, "volumeup");
-      return send_azur_service (method);
-  }
-  else if (strcmp(str, "down") == 0) {
-      strcpy(method, "volumedown");
-      return send_azur_service (method);
-  }
-  else if (strcmp(str, "headphonemodeon") == 0)
-      return send_alsa_service (str);
-  else if (strcmp(str, "headphonemodeoff") == 0)
-      return send_alsa_service (str);
+  if (strcmp(str, "osd") == 0)
+      return osd_direct();
   else {
+      return send_azur_service(str);
+  }
+/*  else {
       print_help();
       return (CMD_EXIST_ERROR);
-  }
+  } */
 }

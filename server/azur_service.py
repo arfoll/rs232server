@@ -76,7 +76,7 @@ class AzurService(dbus.service.Object):
     else:
       return code.replace(azur_cmds.replies[cmd], '')
 
-  def send_cmd(self, cmd, direct=False):
+  def fire_cmd(self, cmd, direct=False):
     self.azur_logger.debug("sent command : %s", cmd)
     if direct:
       code = self.queue.add(azur_cmds.commands[cmd], direct)
@@ -84,65 +84,15 @@ class AzurService(dbus.service.Object):
     else:
       self.queue.add(azur_cmds.commands[cmd], direct)
 
-  @dbus.service.method(AZURSERVICE_IFACE)
-  def mute(self):
-    self.send_cmd('mute')
-
-  @dbus.service.method(AZURSERVICE_IFACE)
-  def unmute(self):
-    self.send_cmd('unmute')
-
-  @dbus.service.method(AZURSERVICE_IFACE)
-  def poweron(self):
-    self.send_cmd('poweron')
-
-  @dbus.service.method(AZURSERVICE_IFACE)
-  def poweroff(self):
-    self.send_cmd('poweroff')
-
-  @dbus.service.method(AZURSERVICE_IFACE, in_signature='i')
-  def volumedown(self, db):
-    for i in range(0, db):
-      self.send_cmd('voldown')
-
-  @dbus.service.method(AZURSERVICE_IFACE, in_signature='i')
-  def volumeup(self, db):
-    for i in range(0, db):
-      self.send_cmd('volup')
-
-  @dbus.service.method(AZURSERVICE_IFACE)
-  def setinputvideo1(self):
-    self.send_cmd('video1')
-
-  @dbus.service.method(AZURSERVER_IFACE)
-  def setinputvideo1(self):
-    self.send_cmd('video2')
-
-  @dbus.service.method(AZURSERVER_IFACE)
-  def setinputvideo1(self):
-    self.send_cmd('video3')
-
-  @dbus.service.method(AZURSERVER_IFACE)
-  def setinputcdaux(self):
-    self.send_cmd('cdaux')
-
-  @dbus.service.method(AZURSERVICE_IFACE, out_signature='i')
-  def getvolume(self):
-    self.send_cmd('volup', True)
-    return self.checkReturnValueInt(self.send_cmd('voldown', True))
-
-  @dbus.service.method(AZURSERVICE_IFACE, out_signature='s')
-  def getsversion(self):
-    return str(self.send_cmd('sversion', True))
-
-  @dbus.service.method(AZURSERVICE_IFACE, out_signature='s')
-  def getpversion(self):
-    return str(self.send_cmd('pversion', True))
+  # typical call would be ('poweron', 1, False)
+  @dbus.service.method(AZURSERVICE_IFACE, in_signature='sib', out_signature='s')
+  def send_cmd(self, cmd, repeat, check):
+    if (check):
+      return str(self.fire_cmd(cmd, check))
+    for i in range(0, repeat):
+      self.fire_cmd(cmd, check)
+    return ""
 
   @dbus.service.method(AZURSERVICE_IFACE)
   def clear(self):
     self.queue.add("clear", True)
-
-  @dbus.service.method(AZURSERVICE_IFACE, out_signature='b')
-  def check(self):
-    return True

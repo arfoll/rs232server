@@ -22,7 +22,6 @@ import logging
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 from azur_service import AzurService
-from alsa_service import AlsaService
 from lgtv_service import LgtvService
 from ConfigParser import SafeConfigParser
 
@@ -46,29 +45,20 @@ def configureLogging(verbose, logger):
   ch.setFormatter(formatter)
   logger.addHandler(ch)
 
-def initServices(parser):
-  # Audio Services
+def initServices(parser, logger, bus_name):
+  # Azur Service
   try:
     azurtty = parser.get('azur', 'tty')
-    ampService = AzurService(str(azurtty))
+    ampService = AzurService(str(azurtty), bus_name)
   except:
     logger.debug('disabled azur service')
 
-  # TV Services
+  # LGTV Service
   try:
     lgtvtty = parser.get('lgtv', 'tty')
-    tvService = LgtvService(str(lgtvtty))
+    tvService = LgtvService(str(lgtvtty), bus_name)
   except:
     logger.debug('disabled lgtv service')
-
-  try:
-    selection = parser.get('alsa', 'selection')
-    spdif = parser.get('alsa', 'spdif')
-    vol = parser.get('alsa', 'vol')
-    # change this to be the default amplifier service
-    AlsaService(int(vol), str(selection), str(spdif), ampService)
-  except:
-    logger.debug('disabled alsa service')
 
 def main():
   # parse CLI arguments
@@ -96,10 +86,10 @@ def main():
   try:
     bus_name = dbus.service.BusName(RS232SERVER_BUS_NAME, bus=dbus.SystemBus())
   except:
-    logger.error('fatal dbus error')
+    logger.error('dbus error - check configuration')
     exit(1)
 
-  initServices(parser)
+  initServices(parser, logger, bus_name)
 
   loop = gobject.MainLoop()
   loop.run()

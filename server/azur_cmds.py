@@ -35,6 +35,14 @@ commands = {
   "cdaux":    "#2,01,7\r",
   "digital":  "#2,04,01\r",
   "analog":   "#2,04,00\r",
+#OSD
+  "osdon":    "#1,13\r",
+  "osdoff":   "#1,14\r",
+  "osdup":    "#1,15\r",
+  "osddown":  "#1,16\r",
+  "osdleft":  "#1,17\r",
+  "osdright": "#1,18\r",
+  "osdenter": "#1,19\r",
 #software
   "sversion": "#5,01,\r",
   "pversion": "#5,02,\r"
