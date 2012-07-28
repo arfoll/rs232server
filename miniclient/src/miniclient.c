@@ -35,10 +35,9 @@
 #define RS232SERVER_BUS_NAME "uk.co.madeo.rs232server"
 #define AZURSERVICE_IFACE "uk.co.madeo.rs232server.azur"
 #define AZURSERVICE_OBJ_PATH "/uk/co/madeo/rs232server/azur"
-#define ALSASERVICE_IFACE "uk.co.madeo.rs232server.alsa"
-#define ALSASERVICE_OBJ_PATH "/uk/co/madeo/rs232server/alsa"
 
 #define MAX_STR_SIZE 30
+#define DBUS_REPLY_TIMEOUT 30000
 
 void
 print_help ()
@@ -53,32 +52,59 @@ send_message_via_dbus (const char *method, const int repeat, char *obj, char *if
   DBusConnection *connection;
   DBusError error;
   DBusMessage *message;
-//  const dbus_int32_t repeat = 1;
-  const dbus_bool_t reply = 0;
+  DBusMessage *reply;
+  dbus_bool_t direct = 0;
+
+  if (repeat == 1) {
+    direct = 1;
+  }
 
   dbus_error_init (&error);
 
   connection = dbus_bus_get (DBUS_BUS_SYSTEM, &error);
   if (connection == NULL) {
-      fprintf(stderr, "Failed to open connection to bus: %s\n", error.message);
-      dbus_error_free (&error);
-      return GENERAL_DBUS_ERROR;
+    fprintf(stderr, "Failed to open connection to bus: %s\n", error.message);
+    dbus_error_free (&error);
+    return GENERAL_DBUS_ERROR;
   }
 
   /* Construct the message */
   message = dbus_message_new_method_call (RS232SERVER_BUS_NAME, obj, iface, "send_cmd");
   /* append arguments */
-  dbus_message_append_args (message, DBUS_TYPE_STRING, &method, DBUS_TYPE_INT32, &repeat, DBUS_TYPE_BOOLEAN, &reply, DBUS_TYPE_INVALID);
+  dbus_message_append_args (message, DBUS_TYPE_STRING, &method, DBUS_TYPE_INT32, &repeat, DBUS_TYPE_BOOLEAN, &direct, DBUS_TYPE_INVALID);
+#if 0
   /* don't ask for a reply */
   dbus_message_set_no_reply(message, TRUE);
+#endif
   /* send message & flush */
-  dbus_connection_send (connection, message, NULL);
-  dbus_connection_flush(connection);
+  reply = dbus_connection_send_with_reply_and_block (connection, message, DBUS_REPLY_TIMEOUT, &error);
+  
+  if (reply != NULL && direct) {
+    DBusMessageIter args;
+    int type;
+    if (dbus_message_iter_init(reply, &args)) {
+      do {
+        type = dbus_message_iter_get_arg_type (&args);
+	if (type == DBUS_TYPE_STRING) {
+	  char *replyContent = NULL;
+	  dbus_message_iter_get_basic(&args, &replyContent);
+          printf("%s\n", replyContent);
+	}
+      } while (dbus_message_iter_has_next(&args));
+    }
+  }
 
+  if (reply)
+    dbus_message_unref (reply);
+  dbus_connection_flush(connection);
   /* clean up */
   dbus_message_unref (message);
   dbus_connection_unref (connection);
   dbus_error_free (&error);
+
+  /* make sure the line is clear when sending repeat messages and not collecting responses over serial */
+  if (!direct)
+    send_message_via_dbus ("clear", 1, obj, iface);
 
   return SUCCESS; 
 }
@@ -87,62 +113,6 @@ int
 send_azur_service (const char *method, const int repeat)
 {
   return send_message_via_dbus (method, repeat, AZURSERVICE_OBJ_PATH, AZURSERVICE_IFACE);
-}
-
-int
-send_alsa_service (const char *method, const int repeat)
-{
-  return send_message_via_dbus (method, repeat, ALSASERVICE_OBJ_PATH, ALSASERVICE_IFACE);  
-}
-
-int
-osd_direct ()
-{
-  int c;
-  static struct termios oldt, newt;
-
-  /* tcgetattr gets the parameters of the current terminal
-     STDIN_FILENO will tell tcgetattr that it should write the settings
-     of stdin to oldt*/
-  tcgetattr(STDIN_FILENO, &oldt);
-
-  /* Now the settings will be copied */
-  newt = oldt;
-
-  /* ICANON normally takes care that one line at a time will be processed
-     that means it will return if it sees a "\n" or an EOF or an EOL */
-  newt.c_lflag &= ~(ICANON);          
-
-  /* Those new settings will be set to STDIN
-     TCSANOW tells tcsetattr to change attributes immediately */
-  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-
-  /* 'e' ends input. Notice that EOF is also turned off in the non-canonical mode */
-  while((c=getchar())!= 'e')
-    switch (c) {
-      case 72:
-        send_azur_service("osdup", 1);
-        break;
-      case 80:
-        send_azur_service("osddown", 1);
-        break;
-      case 77:
-        send_azur_service("osdleft", 1);
-        break;
-      case 75:
-        send_azur_service("osdright", 1);
-        break;
-      case 13:
-        send_azur_service("osdenter", 1);
-        break;
-      default:
-        break;
-    }
-
-  /* Restore the old settings */
-  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-
-  return SUCCESS;
 }
 
 int
@@ -163,15 +133,11 @@ main (const int argc, const char **argv)
     repeat = atoi(argv[2]);
   }
 
-  char *str = argv[1];
 
-  if (strcmp(str, "osd") == 0)
-      return osd_direct();
-  else {
-      return send_azur_service(str, repeat);
-  }
-/*  else {
+  return send_azur_service(argv[1], repeat);
+
+  #if 0
       print_help();
       return (CMD_EXIST_ERROR);
-  } */
+  #endif
 }

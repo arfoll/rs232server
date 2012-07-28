@@ -53,7 +53,7 @@ class SerialController:
         self.ser.write(cmd)
         self.serial_logger.debug (cmd.rstrip() + " called")
         if read:
-          code = self.ser.read(readval)
+          code = self.ser.read(self.readval)
           return code
       else:
         self.serial_logger.debug ("clearing read buffer")
