@@ -71,6 +71,7 @@ class AzurService(dbus.service.Object):
       return STRIPPING_ERROR
 
   def friendlyReply(self, code, cmd):
+    self.azur_logger.debug("Reply code pre-stripping %s", code)
     if self.findKey(code):
       return self.stripErrorCode(code)
     else:

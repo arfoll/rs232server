@@ -45,21 +45,6 @@ def configureLogging(verbose, logger):
   ch.setFormatter(formatter)
   logger.addHandler(ch)
 
-def initServices(parser, logger, bus_name):
-  # Azur Service
-  try:
-    azurtty = parser.get('azur', 'tty')
-    ampService = AzurService(str(azurtty), bus_name)
-  except:
-    logger.debug('disabled azur service')
-
-  # LGTV Service
-  try:
-    lgtvtty = parser.get('lgtv', 'tty')
-    tvService = LgtvService(str(lgtvtty), bus_name)
-  except:
-    logger.debug('disabled lgtv service')
-
 def main():
   # parse CLI arguments
   parser = argparse.ArgumentParser(description=DESCRIPTION)
@@ -78,7 +63,7 @@ def main():
   try:
     parser.readfp(open('/etc/rs232.conf'))
   except:
-    logger.error('failed to read rs232.conf')
+    logger.error('failed to read /etc/rs232.conf')
     exit(1)
 
   # start dbus mainloop
@@ -92,12 +77,14 @@ def main():
   # parse configuration file
   try:
     azurtty = parser.get('azur', 'tty')
+    #azurmodel = parse.get('azur', 'model')
   except:
     azurtty = None
     logger.debug('disabled azur service')
 
   try:
     lgtvtty = parser.get('lgtv', 'tty')
+    #lgtvmodel = parser.get('lgtv', 'model')
   except:
     lgtvtty = None
     logger.debug('disabled lgtv service')

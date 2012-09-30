@@ -50,26 +50,11 @@ class LgtvService(dbus.service.Object):
     self.queue = SerialController(ser, READVAL)
     self.lgtv_logger.debug("Started LGTV Service on %s", LGTVSERVICE_OBJ_PATH)
 
-  def send_cmd(self, cmd, direct=False):
+  @dbus.service.method(LGTVSERVICE_IFACE, in_signature='sib', out_signature='s')
+  def send_cmd(self, cmd, repeat, check):
     self.lgtv_logger.debug("sent command : %s", cmd)
-    self.queue.add(lgtv_cmds.commands[cmd] + b'\r', direct)
-
-  @dbus.service.method(LGTVSERVICE_IFACE)
-  def poweroff(self):
-    self.send_cmd('poweroff')
-
-  @dbus.service.method(LGTVSERVICE_IFACE)
-  def poweron(self):
-    self.send_cmd('poweron')
-
-  @dbus.service.method(LGTVSERVICE_IFACE)
-  def mute(self):
-    self.send_cmd('mute')
-
-  @dbus.service.method(LGTVSERVICE_IFACE)
-  def unmute(self):
-    self.send_cmd('unmute')
-
-  @dbus.service.method(LGTVSERVICE_IFACE)
-  def powerstatus(self):
-    return self.send_cmd('powerstatus', True)
+    if (check):
+      return self.queue.add(lgtv_cmds.commands[cmd] + b'\r', check)
+    for i in range(0, repeat):
+      self.queue.add(lgtv_cmds.commands[cmd] + b'\r', check)
+    return ""

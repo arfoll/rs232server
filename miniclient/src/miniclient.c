@@ -19,31 +19,14 @@
  *
  */
 
-#include <stdio.h>
-#include <termios.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <dbus/dbus.h>
-
-#define SUCCESS 0
-#define GENERAL_ERROR 1
-#define GENERAL_DBUS_ERROR 2
-#define ARG_PARSE_ERROR 3
-#define CMD_EXIST_ERROR 4
-
-#define RS232SERVER_BUS_NAME "uk.co.madeo.rs232server"
-#define AZURSERVICE_IFACE "uk.co.madeo.rs232server.azur"
-#define AZURSERVICE_OBJ_PATH "/uk/co/madeo/rs232server/azur"
-
-#define MAX_STR_SIZE 30
-#define DBUS_REPLY_TIMEOUT 30000
+#include "miniclient.h"
 
 void
 print_help ()
 {
-  fprintf(stdout, "miniclient for rs232server\n");
-  fprintf(stdout, "Commands supported are : volup, voldown, osd\n");
+  fprintf(stdout, "Usage:\n miniclient <service> <command> [repeat]\n");
+  fprintf(stdout, "Services supported:\n azur\n lgtv\n");
+  fprintf(stdout, "Example Commands supported:\n volup\n voldown\n poweroff\n poweron\n");
 }
 
 int
@@ -116,28 +99,48 @@ send_azur_service (const char *method, const int repeat)
 }
 
 int
+send_lgtv_service (const char *method, const int repeat)
+{
+  return send_message_via_dbus (method, repeat, LGTVSERVICE_OBJ_PATH, LGTVSERVICE_IFACE);
+}
+
+// expecting something like ./miniclient azur voldown 5
+int
 main (const int argc, const char **argv)
 {
-  int repeat;
+  unsigned int repeat;
+  const char *method;
+  const char *service;
 
   /* if we don't get any arguments exit */
-  if (argc < 2) {
-    fprintf (stderr, "%s needs a single argument!\n", argv[0]);
+  if (argc < 3) {
+    fprintf (stderr, "%s invalid arguments!\n", argv[0]);
     print_help();
     return (ARG_PARSE_ERROR);
   }
 
-  if (argc == 2) {
+  service = argv[1];
+  method = argv[2];
+  if (argc == 3) {
     repeat = 1;
   } else {
-    repeat = atoi(argv[2]);
+    char *endptr;
+    unsigned int n;
+    errno = 0;
+    n = strtol(argv[3], &endptr, 10);
+    if (*endptr == '\0' && n > 0) {
+      repeat = n;
+    } else {
+      repeat = 1;
+      fprintf (stderr, "error in string conversion, repeat set to 1.\n");
+    }
   }
 
-
-  return send_azur_service(argv[1], repeat);
-
-  #if 0
-      print_help();
-      return (CMD_EXIST_ERROR);
-  #endif
+  //fprintf (stderr, "service = %s, method = %s, repeat = %d\n", service, method, repeat);
+  if (strcmp("lgtv", service) == 0) {
+    return send_lgtv_service(method, repeat);
+  }
+  else {
+    return send_azur_service(method, repeat);
+  }
 }
