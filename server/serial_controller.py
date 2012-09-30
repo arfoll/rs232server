@@ -1,6 +1,6 @@
 #!/usr/bin/python2
 
-# Copyright (C) 2011 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011,2012 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,17 +23,17 @@ import serial
 from threading import Thread
 from threading import Timer
 
-DELAY=0.05
-MAXCMDS=0
-READVAL = 50
+DELAY = 0.05
+MAXCMDS = 0
 STRIPPING_ERROR = 999
 
 class SerialController:
 
   serial_logger = logging.getLogger("rs232server.serial")
 
-  def __init__(self, tty, baud_rate, delay):
-    self.setup_serial(tty, baud_rate, delay)
+  def __init__(self, ser, readval):
+    self.setup_serial(ser)
+    self.readval = readval
 
     # set up queue and start queue monitoring thread
     self.queue = Queue.Queue()
@@ -41,24 +41,19 @@ class SerialController:
     self.t.daemon = True
     self.t.start()
 
-  def setup_serial(self, tty, baud_rate, delay):
-    try:
-      self.ser = serial.Serial(tty, baud_rate, timeout=delay)
-      self.ser.flushInput()
-      self.ser.flushOutput()
-      self.serial_logger.debug("Initialised %s with baud rate %d", tty, baud_rate)
-    except:
-      self.serial_logger.debug(sys.exc_info())
-      self.serial_logger.error("Could not open " + tty)
-      exit(1)
+  def setup_serial(self, ser):
+    self.ser = ser
+    self.ser.flushInput()
+    self.ser.flushOutput()
+    self.serial_logger.debug("Initialised %s with baud rate %d", ser.name, ser.baudrate)
 
   def cmd(self, cmd, read=False):
     try:
       if cmd is not "clear":
         self.ser.write(cmd)
-        self.serial_logger.debug (cmd + " called")
+        self.serial_logger.debug (cmd.rstrip() + " called")
         if read:
-          code = self.ser.read(READVAL)
+          code = self.ser.read(self.readval)
           return code
       else:
         self.serial_logger.debug ("clearing read buffer")
@@ -67,7 +62,7 @@ class SerialController:
         if (waiting > 0):
           self.ser.read(waiting)
     except:
-      self.serial_logger.error (cmd + " call failed")
+      self.serial_logger.error (cmd.rstrip() + " call failed")
 
   def monitor(self):
     while True:

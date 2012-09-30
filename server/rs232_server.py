@@ -1,6 +1,6 @@
 #!/usr/bin/python2
 
-# Copyright (C) 2011 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011,2012 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,9 +19,10 @@ import sys
 import gobject
 import argparse
 import logging
+import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 from azur_service import AzurService
-from alsa_service import AlsaService
+from lgtv_service import LgtvService
 from ConfigParser import SafeConfigParser
 
 LOG_FILENAME = '/tmp/rs232server.log'
@@ -44,25 +45,6 @@ def configureLogging(verbose, logger):
   ch.setFormatter(formatter)
   logger.addHandler(ch)
 
-def initServices(parser):
-  # Audio Services
-  try:
-    azurtty = parser.get('azur', 'tty')
-    ampService = AzurService(str(azurtty))
-  except:
-    logger.debug('disabled azur service')
-
-  try:
-    selection = parser.get('alsa', 'selection')
-    spdif = parser.get('alsa', 'spdif')
-    vol = parser.get('alsa', 'vol')
-    # change this to be the default amplifier service
-    AlsaService(int(vol), str(selection), str(spdif), ampService)
-  except:
-    logger.debug('disabled alsa service')
-
-  # Other Services
-
 def main():
   # parse CLI arguments
   parser = argparse.ArgumentParser(description=DESCRIPTION)
@@ -79,14 +61,39 @@ def main():
   # read configuration file
   parser = SafeConfigParser()
   try:
-    parser.read('rs232.conf')
+    parser.readfp(open('/etc/rs232.conf'))
   except:
-    logger.error('failed to read rs232.conf')
+    logger.error('failed to read /etc/rs232.conf')
+    exit(1)
 
   # start dbus mainloop
   DBusGMainLoop(set_as_default=True)
+  try:
+    bus_name = dbus.service.BusName(RS232SERVER_BUS_NAME, bus=dbus.SystemBus())
+  except:
+    logger.error('fatal dbus error')
+    exit(1)
 
-  initServices(parser)
+  # parse configuration file
+  try:
+    azurtty = parser.get('azur', 'tty')
+    #azurmodel = parse.get('azur', 'model')
+  except:
+    azurtty = None
+    logger.debug('disabled azur service')
+
+  try:
+    lgtvtty = parser.get('lgtv', 'tty')
+    #lgtvmodel = parser.get('lgtv', 'model')
+  except:
+    lgtvtty = None
+    logger.debug('disabled lgtv service')
+
+  # enable the correct services
+  if azurtty is not None:
+    AzurService(str(azurtty), bus_name)
+  if lgtvtty is not None:
+    LgtvService(str(lgtvtty), bus_name)
 
   loop = gobject.MainLoop()
   loop.run()

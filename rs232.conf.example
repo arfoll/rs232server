@@ -1,0 +1,7 @@
+[azur]
+tty = /dev/ttyUSB0
+model = 640R
+
+[lgtv]
+tty = /dev/ttyUSB1
+model = MD27
