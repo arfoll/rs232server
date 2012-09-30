@@ -1,4 +1,4 @@
-# Copyright (C) 2011 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011, 2012 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,8 +13,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-codes = {
-  1101    : "Amplifier is off",
-  1102    : "Wrong command group",
-  1103    : "Wrong command option"
+commands = {
+#volume
+  'volumelevel'   : "kf 00 ff",
+  'mute'          : "ke 00 00",
+  'unmute'        : "ke 00 01",
+#power
+  'poweroff'      : "ka 00 00",
+  'poweron'       : "ka 00 01",
+  'powerstatus'   : "ka 00 ff"
+}
+
+responses = {
+  "off"           : "a 00 OK00x",
+  "on"            : "a 01 OK01x"
 }

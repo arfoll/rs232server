@@ -1,4 +1,4 @@
-# Copyright (C) 2011 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011,2012 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 
 # Values taken from the 340R/540R V3 specification from http://www.cambridgeaudio.com
 # Values have been tested by me to work on a Cambridge Audio Azur 340R, but they should
-# work equaly for a 540R V3 and possible a 640R/650R
+# work equaly for a 540R V3 and possibly 640R/650R/551R
 commands = {
 #volume
   "volup":    "#1,02\r",
@@ -35,6 +35,19 @@ commands = {
   "cdaux":    "#2,01,7\r",
   "digital":  "#2,04,01\r",
   "analog":   "#2,04,00\r",
+#OSD
+  "osdon":    "#1,13\r",
+  "osdoff":   "#1,14\r",
+  "osdup":    "#1,15\r",
+  "osddown":  "#1,16\r",
+  "osdleft":  "#1,17\r",
+  "osdright": "#1,18\r",
+  "osdenter": "#1,19\r",
+#treble/bass
+  "trebleup":   "#1,06\r",
+  "trebledown": "#1,07\r",
+  "bassup":     "#1,04\r",
+  "bassdown":   "#1,05\r",
 #software
   "sversion": "#5,01,\r",
   "pversion": "#5,02,\r"
