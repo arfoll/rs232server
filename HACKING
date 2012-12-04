@@ -14,6 +14,7 @@ then has its own interface that can be used to communicate with that service.
 Generic:
 rs232server.py - the server
 serial_queue.py - implements a queue system. One que per service
+base_service.py - the basic service that services should start from, implements the 'help' function
 
 azur_service.py - the azur service connection
 azur_dbus.py - the azur service dbus iface

@@ -7,7 +7,7 @@ COMPATIBILITY
 
 Azur 340R (tested on SW version 1.3, protocol version 1.1)
 Azur 540R version 3 (untested but assumed to work)
-Azur 640R (tested)
+Azur 640R (tested on SW version 1.5, protocol version 1.0)
 Azur 650R (unknown but basic protocol appears unchanged from doc)
 Azur 551R (unknown but has rs232 port)
 
