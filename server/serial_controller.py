@@ -20,6 +20,7 @@ import time
 import Queue
 import logging
 import serial
+import shared
 from threading import Thread
 from threading import Timer
 
@@ -29,9 +30,8 @@ STRIPPING_ERROR = 999
 
 class SerialController:
 
-  serial_logger = logging.getLogger("rs232server.serial")
-
   def __init__(self, ser, readval):
+    self.serial_logger = logging.getLogger(shared.APP_NAME + '.' + self.__class__.__name__)
     self.setup_serial(ser)
     self.readval = readval
 

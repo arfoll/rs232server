@@ -14,8 +14,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Values taken from the 340R/540R V3 specification from http://www.cambridgeaudio.com
-# Values have been tested by me to work on a Cambridge Audio Azur 340R, but they should
-# work equaly for a 540R V3 and possibly 640R/650R/551R
+# Values have been tested by me to work on a Cambridge Audio Azur 340R & 640R, but they should
+# work equaly for a 540R V3 and 650R/551R
 commands = {
 #volume
   "volup":    "#1,02\r",

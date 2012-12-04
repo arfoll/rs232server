@@ -15,13 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-import dbus
 import dbus.service
-import logging
-import serial
 from dbus.mainloop.glib import DBusGMainLoop
 from serial_controller import SerialController
+from base_service import BaseService
 
 import lgtv_cmds
 
@@ -33,26 +30,17 @@ BAUD_RATE = 9600
 BYTESIZE = 8
 READVAL = 10
 
-class LgtvService(dbus.service.Object):
-
-  lgtv_logger = logging.getLogger("rs232server.lgtv")
+class LgtvService(BaseService):
 
   def __init__(self, tty, bus_name):
-    dbus.service.Object.__init__(self, bus_name, LGTVSERVICE_OBJ_PATH)
-    
-    try:
-      ser = serial.Serial(tty, BAUD_RATE, BYTESIZE, serial.PARITY_NONE,
-                          serial.STOPBITS_ONE, xonxoff=0, rtscts=0, timeout=DELAY)
-    except:
-      self.lgtv_logger.error("Could not open " + tty)
-      exit(1)
-
-    self.queue = SerialController(ser, READVAL)
-    self.lgtv_logger.debug("Started LGTV Service on %s", LGTVSERVICE_OBJ_PATH)
+    BaseService.__init__(self, bus_name, LGTVSERVICE_OBJ_PATH, tty, BAUD_RATE, READVAL, lgtv_cmds)
 
   @dbus.service.method(LGTVSERVICE_IFACE, in_signature='sib', out_signature='s')
   def send_cmd(self, cmd, repeat, check):
-    self.lgtv_logger.debug("sent command : %s", cmd)
+    self.logger.debug("sent command : %s", cmd)
+    if cmd == "help":
+      self.logger.debug("Getting help!")
+      return self.help()
     if (check):
       return self.queue.add(lgtv_cmds.commands[cmd] + b'\r', check)
     for i in range(0, repeat):

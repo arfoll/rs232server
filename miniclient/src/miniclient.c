@@ -26,7 +26,7 @@ print_help ()
 {
   fprintf(stdout, "Usage:\n miniclient <service> <command> [repeat]\n");
   fprintf(stdout, "Services supported:\n azur\n lgtv\n");
-  fprintf(stdout, "Example Commands supported:\n volup\n voldown\n poweroff\n poweron\n");
+  fprintf(stdout, "Use miniclient <service> help to get a list of commands supported by services\n");
 }
 
 int
