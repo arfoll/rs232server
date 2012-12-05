@@ -48,6 +48,19 @@ commands = {
   "trebledown": "#1,07\r",
   "bassup":     "#1,04\r",
   "bassdown":   "#1,05\r",
+#drc
+  "drcoff":    "#1,12,00\r",
+  "drc1":      "#1,12,01\r",
+  "drc2":      "#1,12,02\r",
+  "drc3":      "#1,12,03\r",
+  "drc4":      "#1,12,04\r",
+#surround modes
+  "stereo":    "#4,01,00\r",
+  "stereosw":  "#4,01,01\r",
+  "pl2":       "#4,02\r",
+  "dd/dts":    "#4,03\r",
+  "pl2mode":   "#4,04\r",
+  "dd/dtsmode":"#4,05\r",
 #software
   "sversion": "#5,01,\r",
   "pversion": "#5,02,\r"
