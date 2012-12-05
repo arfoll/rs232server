@@ -24,7 +24,7 @@ import shared
 from dbus.mainloop.glib import DBusGMainLoop
 from azur_service import AzurService
 from lgtv_service import LgtvService
-from ConfigParser import SafeConfigParser
+import ConfigParser
 
 LOG_FILENAME = '/tmp/' + shared.APP_NAME + '.log'
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -60,7 +60,7 @@ def main():
   configureLogging(args.verbose, logger)
 
   # read configuration file
-  parser = SafeConfigParser()
+  parser = ConfigParser.SafeConfigParser()
   try:
     parser.readfp(open(shared.CONF_PATH))
   except:
@@ -75,26 +75,16 @@ def main():
     logger.error('fatal dbus error')
     exit(1)
 
-  # parse configuration file
-  try:
-    azurtty = parser.get('azur', 'tty')
-    #azurmodel = parse.get('azur', 'model')
-  except:
-    azurtty = None
-    logger.debug('disabled azur service')
-
-  try:
-    lgtvtty = parser.get('lgtv', 'tty')
-    #lgtvmodel = parser.get('lgtv', 'model')
-  except:
-    lgtvtty = None
-    logger.debug('disabled lgtv service')
-
-  # enable the correct services
-  if azurtty is not None:
-    AzurService(str(azurtty), bus_name)
-  if lgtvtty is not None:
-    LgtvService(str(lgtvtty), bus_name)
+  for section in parser.sections():
+    try:
+      tty = parser.get(section, 'tty')
+      service = eval(section)(tty,bus_name)
+    except ConfigParser.NoOptionError, err:
+      logger.error('%s in %s', str(err), shared.CONF_PATH)
+      exit(1)
+    except:
+      logger.error('Check that %s is a valid service name', section)
+      exit(1)
 
   loop = gobject.MainLoop()
   loop.run()
