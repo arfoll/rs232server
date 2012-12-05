@@ -66,10 +66,10 @@ class AzurService(BaseService):
   def fire_cmd(self, cmd, direct=False):
     self.logger.debug("sent command : %s", cmd)
     if direct:
-      code = self.queue.add(azur_cmds.commands[cmd], direct)
+      code = self.queue.add(azur_cmds.commands[cmd].decode('ascii'), direct)
       return self.friendlyReply(code, cmd)
     else:
-      self.queue.add(azur_cmds.commands[cmd], direct)
+      self.queue.add(azur_cmds.commands[cmd].decode('ascii'), direct)
 
   # typical call would be ('poweron', 1, False)
   @dbus.service.method(AZURSERVICE_IFACE, in_signature='sib', out_signature='s')

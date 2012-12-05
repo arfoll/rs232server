@@ -28,7 +28,8 @@ class BaseService(dbus.service.Object):
     self.logger = logging.getLogger(shared.APP_NAME + '.' + self.__class__.__name__ )
     self.cmds = cmds
     try:
-      ser = serial.Serial(tty, baud_rate, timeout=shared.DELAY)
+      # expecting typical 8n1 case
+      ser = serial.Serial(tty, baud_rate, timeout=shared.DELAY, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE)
     except:
       self.logger.error("Could not open " + tty)
       exit(1)

@@ -18,8 +18,8 @@
 # work equaly for a 540R V3 and 650R/551R
 commands = {
 #volume
-  "volup":    "#1,02\r",
-  "voldown":  "#1,03\r",
+  "volup":    "#1,02,\r",
+  "voldown":  "#1,03,\r",
   "mute":     "#1,11,01\r",
   "unmute":   "#1,11,00\r",
 #power
@@ -36,18 +36,18 @@ commands = {
   "digital":  "#2,04,01\r",
   "analog":   "#2,04,00\r",
 #OSD
-  "osdon":    "#1,13\r",
-  "osdoff":   "#1,14\r",
-  "osdup":    "#1,15\r",
-  "osddown":  "#1,16\r",
-  "osdleft":  "#1,17\r",
-  "osdright": "#1,18\r",
-  "osdenter": "#1,19\r",
+  "osdon":    "#1,13,\r",
+  "osdoff":   "#1,14,\r",
+  "osdup":    "#1,15,\r",
+  "osddown":  "#1,16,\r",
+  "osdleft":  "#1,17,\r",
+  "osdright": "#1,18,\r",
+  "osdenter": "#1,19,\r",
 #treble/bass
-  "trebleup":   "#1,06\r",
-  "trebledown": "#1,07\r",
-  "bassup":     "#1,04\r",
-  "bassdown":   "#1,05\r",
+  "trebleup":   "#1,06,\r",
+  "trebledown": "#1,07,\r",
+  "bassup":     "#1,04,\r",
+  "bassdown":   "#1,05,\r",
 #drc
   "drcoff":    "#1,12,00\r",
   "drc1":      "#1,12,01\r",
@@ -57,10 +57,10 @@ commands = {
 #surround modes
   "stereo":    "#4,01,00\r",
   "stereosw":  "#4,01,01\r",
-  "pl2":       "#4,02\r",
-  "dd/dts":    "#4,03\r",
-  "pl2mode":   "#4,04\r",
-  "dd/dtsmode":"#4,05\r",
+  "pl2":       "#4,02,\r",
+  "dd/dts":    "#4,03,\r",
+  "pl2mode":   "#4,04,\r",
+  "dd/dtsmode":"#4,05,\r",
 #software
   "sversion": "#5,01,\r",
   "pversion": "#5,02,\r"
