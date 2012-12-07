@@ -16,22 +16,28 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import dbus
+import dbus.service
 import logging
-import shared
+import Shared
 import serial
-from serial_controller import SerialController
+from SerialController import SerialController
+
+class invalidtty(Exception):
+  def __init__(self, value):
+    self.value = value
+  def __str__(self):
+    return repr(self.value)
 
 class BaseService(dbus.service.Object):
 
   def __init__(self, bus_name, obj_path, tty, baud_rate, readval, cmds):
     dbus.service.Object.__init__(self, bus_name, obj_path)
-    self.logger = logging.getLogger(shared.APP_NAME + '.' + self.__class__.__name__ )
+    self.logger = logging.getLogger(Shared.APP_NAME + '.' + self.__class__.__name__ )
     self.cmds = cmds
     try:
-      ser = serial.Serial(tty, baud_rate, timeout=shared.DELAY)
+      ser = serial.Serial(tty, baud_rate, timeout=Shared.DELAY)
     except:
-      self.logger.error("Could not open " + tty)
-      exit(1)
+      raise invalidtty("Could not open " + tty)
 
     self.queue = SerialController(ser, readval)
     self.logger.debug("Started service on %s", obj_path)
@@ -42,3 +48,9 @@ class BaseService(dbus.service.Object):
       string += '\n' + p
     # strip first character
     return string[1:]
+
+  def send_cmd(self, cmd, repeat, check):
+    return NotImplemented
+
+  def clear(self):
+    return NotImplemented

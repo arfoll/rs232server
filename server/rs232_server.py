@@ -20,15 +20,16 @@ import gobject
 import argparse
 import logging
 import dbus
-import shared
+import Shared
 from dbus.mainloop.glib import DBusGMainLoop
-from azur_service import AzurService
-from lgtv_service import LgtvService
+from BaseService import BaseService, invalidtty
+#from azur_service import AzurService
+#from lgtv_service import LgtvService
 import ConfigParser
 
-LOG_FILENAME = '/tmp/' + shared.APP_NAME + '.log'
+LOG_FILENAME = '/tmp/' + Shared.APP_NAME + '.log'
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-RS232SERVER_BUS_NAME = 'uk.co.madeo.' + shared.APP_NAME
+RS232SERVER_BUS_NAME = 'uk.co.madeo.' + Shared.APP_NAME
 DESCRIPTION = "Listen over dbus for commands to be sent over RS232"
 
 def configureLogging(verbose, logger):
@@ -56,15 +57,15 @@ def main():
   args = parser.parse_args()
 
   # set up logging
-  logger = logging.getLogger(shared.APP_NAME)
+  logger = logging.getLogger(Shared.APP_NAME)
   configureLogging(args.verbose, logger)
 
   # read configuration file
   parser = ConfigParser.SafeConfigParser()
   try:
-    parser.readfp(open(shared.CONF_PATH))
+    parser.readfp(open(Shared.CONF_PATH))
   except:
-    logger.error('failed to read ' + shared.CONF_PATH)
+    logger.error('failed to read ' + Shared.CONF_PATH)
     exit(1)
 
   # start dbus mainloop
@@ -78,11 +79,18 @@ def main():
   for section in parser.sections():
     try:
       tty = parser.get(section, 'tty')
-      service = eval(section)(tty,bus_name)
+      x = __import__(section)
+      service = eval('x.' + section)(tty,bus_name)
+      #if not issubclass(service, BaseService): 
+      #  raise Exception("Class is not subclass of BaseService")
     except ConfigParser.NoOptionError, err:
-      logger.error('%s in %s', str(err), shared.CONF_PATH)
+      logger.error('%s in %s', str(err), Shared.CONF_PATH)
       exit(1)
-    except:
+    except invalidtty, e:
+      logger.error('%s', str(e))
+      exit(1)
+    except Exception, e:
+      logger.debug('%s', str(e))
       logger.error('Check that %s is a valid service name', section)
       exit(1)
 
