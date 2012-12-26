@@ -1,6 +1,9 @@
-- Dynamic import of module on finding service in rs232.conf?
 - Listing of services from rs232server cli
 - Manual overriding of tty/model in rs232server cli
 - move rs232server to be an object
 - move all object constants to the object
 - move LOG_FILENAME & similar to shared - what is DELAY doing in there?
+
+- setup.py, real installer for server
+- arch pkg in AUR
+- udev rules in doc
