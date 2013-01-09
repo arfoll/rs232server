@@ -14,12 +14,10 @@ AM_PROG_CC_C_O
 PKG_PROG_PKG_CONFIG
 
 # Checks for libraries.
-#AC_CHECK_LIB([dbus-1], [main], [ LIBS_LIB_DBUS="-ldbus-1"], [ echo "Libdbus-1 not found - exiting!"; exit 1 ])
 PKG_CHECK_MODULES(DBUS, dbus-1)
-PKG_CHECK_MODULES(NCURSES, ncursesw)
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdint.h stdlib.h string.h termios.h unistd.h])
+AC_CHECK_HEADERS([stdint.h stdlib.h string.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_INLINE
@@ -31,5 +29,5 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([memmove strchr strdup strstr])
 
-AC_CONFIG_FILES([src/Makefile libtermkey/Makefile])
+AC_CONFIG_FILES([src/Makefile])
 AC_OUTPUT
