@@ -35,7 +35,11 @@ DESCRIPTION = "Listen over dbus for commands to be sent over RS232"
 def configureLogging(verbose, logger):
   logger.setLevel(logging.DEBUG)
   formatter = logging.Formatter(LOG_FORMAT)
-  fh = logging.FileHandler(LOG_FILENAME)
+  try:
+    fh = logging.FileHandler(LOG_FILENAME)
+  except:
+    print 'Check you have write permissions to', LOG_FILENAME
+    exit(1)
   fh.setLevel(logging.DEBUG)
   fh.setFormatter(formatter)
   logger.addHandler(fh)
