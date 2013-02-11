@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 
-# Copyright (C) 2011, 2012 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011,2012,2013 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
