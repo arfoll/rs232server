@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/env python2
 
 # Copyright (C) 2011,2012 Brendan Le Foll <brendan@fridu.net>
 #
@@ -20,15 +20,15 @@ import gobject
 import argparse
 import logging
 import dbus
-import shared
+import rs232modules.shared
 from dbus.mainloop.glib import DBusGMainLoop
-from azur_service import AzurService
-from lgtv_service import LgtvService
+from rs232modules.azur_service import AzurService
+from rs232modules.lgtv_service import LgtvService
 from ConfigParser import SafeConfigParser
 
-LOG_FILENAME = '/tmp/' + shared.APP_NAME + '.log'
+LOG_FILENAME = '/tmp/' + rs232modules.shared.APP_NAME + '.log'
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-RS232SERVER_BUS_NAME = 'uk.co.madeo.' + shared.APP_NAME
+RS232SERVER_BUS_NAME = 'uk.co.madeo.' + rs232modules.shared.APP_NAME
 DESCRIPTION = "Listen over dbus for commands to be sent over RS232"
 
 def configureLogging(verbose, logger):
@@ -56,15 +56,15 @@ def main():
   args = parser.parse_args()
 
   # set up logging
-  logger = logging.getLogger(shared.APP_NAME)
+  logger = logging.getLogger(rs232modules.shared.APP_NAME)
   configureLogging(args.verbose, logger)
 
   # read configuration file
   parser = SafeConfigParser()
   try:
-    parser.readfp(open(shared.CONF_PATH))
+    parser.readfp(open(rs232modules.shared.CONF_PATH))
   except:
-    logger.error('failed to read ' + shared.CONF_PATH)
+    logger.error('failed to read ' + rs232modules.shared.CONF_PATH)
     exit(1)
 
   # start dbus mainloop

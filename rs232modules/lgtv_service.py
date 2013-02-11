@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/env python2
 
 # Copyright (C) 2011,2012 Brendan Le Foll <brendan@fridu.net>
 #

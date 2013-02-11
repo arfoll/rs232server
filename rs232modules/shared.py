@@ -1,4 +1,6 @@
-# Copyright (C) 2011, 2012 Brendan Le Foll <brendan@fridu.net>
+#!/usr/bin/env python2
+
+# Copyright (C) 2011,2012 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,18 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-commands = {
-#volume
-  'volumelevel'   : "kf 00 ff",
-  'mute'          : "ke 00 00",
-  'unmute'        : "ke 00 01",
-#power
-  'poweroff'      : "ka 00 00",
-  'poweron'       : "ka 00 01",
-  'powerstatus'   : "ka 00 ff"
-}
+SHORT_NAME="rs232"
+CONF_PATH_DIR="/etc/"
+CONF_PATH=CONF_PATH_DIR+SHORT_NAME+".conf"
+APP_NAME=SHORT_NAME+"server"
 
-responses = {
-  "off"           : "a 00 OK00x",
-  "on"            : "a 01 OK01x"
-}
+DELAY=0.1
