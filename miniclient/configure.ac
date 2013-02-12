@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([rs232 miniclient], [0.1], [brendan@fridu.net])
-AM_INIT_AUTOMAKE(rs232_miniclient, 0.1)
+AC_INIT([miniclient], [0.1], [brendan@fridu.net])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
@@ -29,5 +29,8 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([memmove strchr strdup strstr])
 
-AC_CONFIG_FILES([src/Makefile])
+AC_CONFIG_FILES([
+ Makefile
+ src/Makefile
+])
 AC_OUTPUT
