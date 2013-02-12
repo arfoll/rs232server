@@ -1,6 +1,6 @@
-#!/usr/bin/python2
+#!/usr/bin/env python2
 
-# Copyright (C) 2011,2012 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011,2012,2013 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -66,10 +66,10 @@ class AzurService(BaseService):
   def fire_cmd(self, cmd, direct=False):
     self.logger.debug("sent command : %s", cmd)
     if direct:
-      code = self.queue.add(azur_cmds.commands[cmd], direct)
+      code = self.queue.add(azur_cmds.commands[cmd].decode('ascii'), direct)
       return self.friendlyReply(code, cmd)
     else:
-      self.queue.add(azur_cmds.commands[cmd], direct)
+      self.queue.add(azur_cmds.commands[cmd].decode('ascii'), direct)
 
   # typical call would be ('poweron', 1, False)
   @dbus.service.method(AZURSERVICE_IFACE, in_signature='sib', out_signature='s')

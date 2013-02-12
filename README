@@ -21,7 +21,12 @@ listening to the users media player in order to switch on when neccessary, repla
 
 INSTALL
 
-requires python2, python-pyserial and dbus
+Just like a standard python module use:
+sudo ./setup.py install
+or to install it locally, use:
+./setup.py install --user
+
+The script requires python2, python-pyserial and dbus
 
 To connect the Amplifier (Azur 340R), use a null modem cable to a serial port or USB->serial controller
 

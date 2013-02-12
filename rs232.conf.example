@@ -1,7 +1,7 @@
-[AzurService]
+[rs232modules.AzurService]
 tty = /dev/ttyUSB0
 model = 640R
 
-[LgtvService]
+[rs232modules.LgtvService]
 tty = /dev/ttyUSB1
 model = MD27

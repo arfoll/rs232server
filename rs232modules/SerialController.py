@@ -1,6 +1,6 @@
-#!/usr/bin/python2
+#!/usr/bin/env python2
 
-# Copyright (C) 2011,2012 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011,2012,2013 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -50,14 +50,17 @@ class SerialController:
   def cmd(self, cmd, read=False):
     try:
       if cmd is not "clear":
-        self.ser.write(cmd)
+        numBytes = self.ser.write(cmd)
+        self.serial_logger.debug("Wrote %d bytes", numBytes)
         self.serial_logger.debug (cmd.rstrip() + " called")
         if read:
           code = self.ser.read(self.readval)
           return code
       else:
         self.serial_logger.debug ("clearing read buffer")
+        self.ser.flush()
         self.ser.flushOutput()
+        self.ser.flushInput()
         waiting = self.ser.inWaiting()
         if (waiting > 0):
           self.ser.read(waiting)
