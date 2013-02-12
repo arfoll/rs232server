@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/python2
 
-# Copyright (C) 2011,2012,2013 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011,2012 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,10 +16,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import dbus
+import dbus.service
 import logging
-import serial
 import Shared
+import serial
 from SerialController import SerialController
+
+class invalidtty(Exception):
+  def __init__(self, value):
+    self.value = value
+  def __str__(self):
+    return repr(self.value)
 
 class BaseService(dbus.service.Object):
 
@@ -28,8 +35,7 @@ class BaseService(dbus.service.Object):
     self.logger = logging.getLogger(Shared.APP_NAME + '.' + self.__class__.__name__ )
     self.cmds = cmds
     try:
-      # expecting typical 8n1 case
-      ser = serial.Serial(tty, baud_rate, timeout=Shared.DELAY, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE)
+      ser = serial.Serial(tty, baud_rate, timeout=Shared.DELAY)
     except:
       raise invalidtty("Could not open " + tty)
 

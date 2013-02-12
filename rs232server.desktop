@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=rs232server
 Comment=control rs232 devices over dbus
-Exec=rs232server.py
+Exec=rs232server
 Terminal=false
 Type=Application
 Categories=System;Settings;

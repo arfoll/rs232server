@@ -4,7 +4,7 @@ Description = Starts rs232server
 [Service]
 Type=dbus
 BusName=uk.co.madeo.rs232server
-ExecStart=/usr/bin/rs232_server.py
+ExecStart=/usr/bin/rs232server
 
 [Install]
 WantedBy = multi-user.target

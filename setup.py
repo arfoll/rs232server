@@ -8,5 +8,5 @@ setup(name='rs232server',
       author_email='brendan@fridu.org',
       url='http://github.com/arfoll/rs232server',
       packages=['rs232modules'] ,
-      scripts=['rs232_server.py'],
+      scripts=['rs232server'],
      )

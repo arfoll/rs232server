@@ -17,8 +17,8 @@
 
 import dbus.service
 from dbus.mainloop.glib import DBusGMainLoop
-from serial_controller import SerialController
-from base_service import BaseService
+from SerialController import SerialController
+from BaseService import BaseService
 
 import lgtv_cmds
 
