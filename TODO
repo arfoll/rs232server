@@ -4,6 +4,5 @@
 - move all object constants to the object
 - move LOG_FILENAME & similar to shared - what is DELAY doing in there?
 
-- setup.py, real installer for server
 - arch pkg in AUR
 - udev rules in doc
