@@ -81,7 +81,6 @@ def main():
   for section in parser.sections():
     try:
       tty = parser.get(section, 'tty')
-#_temp = __import__('spam.ham', globals(), locals(), ['eggs', 'sausage'], -1)
       x = __import__('rs232modules.' + str(section), globals(), locals(), [section], -1)
       service = eval('x.' + section)(tty,bus_name)
       #if not issubclass(service, BaseService): 
