@@ -70,6 +70,8 @@ package() {
 		${pkgdir}${_prefix}/share/licenses/${pkgname}
 	# install systemd service
 	install -Dm0644 $srcdir/${_gitname}-build/rs232server.service $pkgdir/usr/lib/systemd/system/rs232server.service
+	# install rs232 conf file
+	install -Dm0644 $srcdir/${_gitname}-build/rs232.conf.example $pkgdir/etc/rs232.conf
 
 	git show | grep -m 1 commit | sed 's/commit //' > ${startdir}/.githash_${CARCH}
 }

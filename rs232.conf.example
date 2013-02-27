@@ -3,10 +3,10 @@
 
 # Udev rules can also be used, but require more configuration
 
-[rs232modules.AzurService]
+[AzurService]
 tty = /dev/ttyUSB0
 model = 640R
 
-[rs232modules.LgtvService]
+[LgtvService]
 tty = /dev/ttyUSB1
 model = MD27
