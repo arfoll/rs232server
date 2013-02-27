@@ -1,3 +1,8 @@
+# it is recommend you use /dev/serial/by-path/ especially
+# if you use multiple usb -> serial adapters
+
+# Udev rules can also be used, but require more configuration
+
 [rs232modules.AzurService]
 tty = /dev/ttyUSB0
 model = 640R
