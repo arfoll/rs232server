@@ -34,7 +34,7 @@ def configureLogging(verbose, dev, logger):
   if dev:
     logger.setLevel(logging.DEBUG)
   else:
-    logger.setLevel(logging.WARNING)
+    logger.setLevel(logging.INFO)
   formatter = logging.Formatter(LOG_FORMAT)
   try:
     fh = logging.FileHandler(LOG_FILENAME)

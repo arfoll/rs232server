@@ -42,7 +42,7 @@ class BaseService(dbus.service.Object):
       raise invalidtty("Could not open " + tty)
 
     self.queue = SerialController(ser, readval)
-    self.logger.debug("Started service on %s", obj_path)
+    self.logger.info("Started service on %s", obj_path)
 
   def help(self):
     string = ""
@@ -58,8 +58,10 @@ class BaseService(dbus.service.Object):
   def get_model(self):
      return self.model
 
+  # TODO: make these @dbus methods that are inherited from
   def send_cmd(self, cmd, repeat, check):
-    return NotImplemented
+    self.logger.info("cmd %s sent", cmd)
+    return
 
   def clear(self):
     return NotImplemented
