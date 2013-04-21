@@ -57,7 +57,7 @@ class SerialController:
           code = self.ser.read(self.readval)
           return code
       else:
-        self.serial_logger.debug ("clearing read buffer")
+        self.serial_logger.debug ("Clearing read buffer")
         self.ser.flush()
         self.ser.flushOutput()
         self.ser.flushInput()
@@ -65,7 +65,7 @@ class SerialController:
         if (waiting > 0):
           self.ser.read(waiting)
     except:
-      self.serial_logger.error (cmd.rstrip() + " call failed")
+      self.serial_logger.error ("%s call failed", cmd.rstrip())
 
   def monitor(self):
     while True:

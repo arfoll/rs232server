@@ -30,6 +30,8 @@ class invalidtty(Exception):
 
 class BaseService(dbus.service.Object):
 
+  model = None
+
   def __init__(self, bus_name, obj_path, tty, baud_rate, readval, cmds):
     dbus.service.Object.__init__(self, bus_name, obj_path)
     self.logger = logging.getLogger(Shared.APP_NAME + '.' + self.__class__.__name__ )
@@ -48,6 +50,13 @@ class BaseService(dbus.service.Object):
       string += '\n' + p
     # strip first character
     return string[1:]
+
+  def set_model(self, model):
+    self.logger.debug("Model set to %s", model)
+    self.model = model
+
+  def get_model(self):
+     return self.model
 
   def send_cmd(self, cmd, repeat, check):
     return NotImplemented

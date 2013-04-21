@@ -53,7 +53,7 @@ class AzurService(BaseService):
       code = code.replace('\n', '')
       return int(code)
     except:
-      self.logger.debug("stripping error for %s", code)
+      self.logger.warning("stripping error for %s", code)
       return STRIPPING_ERROR
 
   def friendlyReply(self, code, cmd):
@@ -77,9 +77,14 @@ class AzurService(BaseService):
     if cmd == "help":
       self.logger.debug("Getting help!")
       return self.help()
-    if (check):
-      return str(self.fire_cmd(cmd, check))
+    # my CA 640R is a little buggy so we resend everything twice if we have this model
+    if (self.get_model() == "640R"):
+      repeat *= 2
     for i in range(0, repeat):
+      if i == (repeat-1) and check:
+        val = self.fire_cmd(cmd, check)
+        #logger.debug("val returned is %s", val)
+        return val
       self.fire_cmd(cmd, check)
     return ""
 

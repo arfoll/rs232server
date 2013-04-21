@@ -5,7 +5,7 @@
 
 [AzurService]
 tty = /dev/ttyUSB0
-model = 640R
+model = 340R
 
 [LgtvService]
 tty = /dev/ttyUSB1
