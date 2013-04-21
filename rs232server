@@ -30,8 +30,11 @@ LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 RS232SERVER_BUS_NAME = 'uk.co.madeo.' + rs232modules.Shared.APP_NAME
 DESCRIPTION = "Listen over dbus for commands to be sent over RS232"
 
-def configureLogging(verbose, logger):
-  logger.setLevel(logging.DEBUG)
+def configureLogging(verbose, dev, logger):
+  if dev:
+    logger.setLevel(logging.DEBUG)
+  else:
+    logger.setLevel(logging.WARNING)
   formatter = logging.Formatter(LOG_FORMAT)
   try:
     fh = logging.FileHandler(LOG_FILENAME)
@@ -54,13 +57,13 @@ def main():
   parser = argparse.ArgumentParser(description=DESCRIPTION)
   parser.add_argument('--verbose', '-v', action='store_true', dest='verbose', default=False,
                       help='enables more verbose output')
-  parser.add_argument('--development', '-dev', action='store_true', dest='dev', default=False,
+  parser.add_argument('--dev', '-d', action='store_true', dest='dev', default=False,
                       help='development mode disables some commands that could be dangerous. Read documentation before using')
   args = parser.parse_args()
 
   # set up logging
   logger = logging.getLogger(rs232modules.Shared.APP_NAME)
-  configureLogging(args.verbose, logger)
+  configureLogging(args.verbose, args.dev, logger)
 
   # read configuration file
   parser = ConfigParser.SafeConfigParser()
@@ -85,12 +88,12 @@ def main():
       service = eval('x.' + section)(tty,bus_name)
       try:
         service.set_model(parser.get(section, 'model'))
-      except e:
+      except Exception, e:
         logger.debug('No model found in config file %s' ,str(e))
       #if not issubclass(service, BaseService): 
       #  raise Exception("Class is not subclass of BaseService")
     except ConfigParser.NoOptionError, err:
-      logger.error('%s in %s', str(err), Shared.CONF_PATH)
+      logger.error('%s in %s', str(err), rs232modules.Shared.CONF_PATH)
       exit(1)
     except invalidtty, e:
       logger.error('%s', str(e))
