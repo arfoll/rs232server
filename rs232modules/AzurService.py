@@ -31,6 +31,8 @@ READVAL = 50
 
 class AzurService(BaseService):
 
+  last = ("none", "-0")
+
   def __init__(self, tty, bus_name):
     BaseService.__init__(self, bus_name, AZURSERVICE_OBJ_PATH, tty, BAUD_RATE, READVAL, azur_cmds)
 
@@ -53,7 +55,7 @@ class AzurService(BaseService):
       code = code.replace('\n', '')
       return int(code)
     except:
-      self.logger.warning("stripping error for %s", code)
+      self.logger.warning("Stripping error for %s", code)
       return STRIPPING_ERROR
 
   def friendlyReply(self, code, cmd):
@@ -67,13 +69,15 @@ class AzurService(BaseService):
     self.logger.debug("sent command : %s", cmd)
     if direct:
       code = self.queue.add(azur_cmds.commands[cmd].decode('ascii'), direct)
-      return self.friendlyReply(code, cmd)
+      self.last = (cmd, self.friendlyReply(code, cmd))
+      self.logger.debug("Reply is (%s, %s)", self.last[0], self.last[1])
+      return self.last[1]
     else:
       self.queue.add(azur_cmds.commands[cmd].decode('ascii'), direct)
 
   # typical call would be ('poweron', 1, False)
   @dbus.service.method(AZURSERVICE_IFACE, in_signature='sib', out_signature='s')
-  def send_cmd(self, cmd, repeat, check):
+  def send_cmd(self, cmd, repeat, direct):
     if cmd == "help":
       self.logger.debug("Getting help!")
       return self.help()
@@ -81,11 +85,19 @@ class AzurService(BaseService):
     if (self.get_model() == "640R"):
       repeat *= 2
     for i in range(0, repeat):
-      if i == (repeat-1) and check:
-        val = self.fire_cmd(cmd, check)
+      # volume level check code
+      if (self.last[0] == "volup"):
+        if (int(self.last[1]) > int(-30)):
+          self.logger.error("Volume is too high!")
+          return "WARNING: VOLUME is really high..."
+        else:
+          self.logger.debug("Volume is %s, keep playing...", self.last[1])
+      # repeat if required
+      if i == (repeat-1) and direct:
+        val = self.fire_cmd(cmd, direct)
         #logger.debug("val returned is %s", val)
         return val
-      self.fire_cmd(cmd, check)
+      self.fire_cmd(cmd, direct)
     return ""
 
   @dbus.service.method(AZURSERVICE_IFACE)
