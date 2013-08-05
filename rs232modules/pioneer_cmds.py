@@ -19,7 +19,10 @@ commands = {
 #power
   'poweroff'      : "POWR0   \r",
   'poweron'       : "POWR1   \r",
-  'powerstatus'   : "POWR?   \r"
+  'powerstatus'   : "POWR?   \r",
+#volume
+  'mute'          : "MUTE1   \r",
+  'unmute'        : "MUTE2   \r"
 }
 
 responses = {
