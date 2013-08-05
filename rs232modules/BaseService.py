@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
 import dbus
 import dbus.service
 import logging
@@ -39,7 +40,7 @@ class BaseService(dbus.service.Object):
     try:
       ser = serial.Serial(tty, baud_rate, timeout=Shared.DELAY)
     except:
-      raise invalidtty("Could not open " + tty)
+      raise invalidtty("Could not open " + tty + ", check it is valid and that the user has permission to use it.")
 
     self.queue = SerialController(ser, readval)
     self.logger.info("Started service on %s", obj_path)
