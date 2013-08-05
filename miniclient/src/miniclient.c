@@ -25,7 +25,7 @@ void
 print_help ()
 {
   fprintf(stdout, "Usage:\n miniclient <service> <command> [repeat]\n");
-  fprintf(stdout, "Services supported:\n azur\n lgtv\n");
+  fprintf(stdout, "Services supported:\n azur\n lgtv\n pioneer\n");
   fprintf(stdout, "Use miniclient <service> help to get a list of commands supported by services\n");
 }
 
@@ -93,15 +93,18 @@ send_message_via_dbus (const char *method, const int repeat, char *obj, char *if
 }
 
 int
-send_azur_service (const char *method, const int repeat)
+send_service (const char *service, const char *method, const int repeat)
 {
-  return send_message_via_dbus (method, repeat, AZURSERVICE_OBJ_PATH, AZURSERVICE_IFACE);
-}
-
-int
-send_lgtv_service (const char *method, const int repeat)
-{
-  return send_message_via_dbus (method, repeat, LGTVSERVICE_OBJ_PATH, LGTVSERVICE_IFACE);
+  char objpath[255];
+  char iface[255];
+  strcpy(iface, RS232SERVER_BUS_NAME);
+  strcat(iface, ".");
+  strcat(iface, service);
+  strcpy(objpath, RS232SERVER_OBJ_PATH);
+  strcat(objpath, "/");
+  strcat(objpath, service);
+  fprintf(stdout, "Using service %s on Obj %s and iface %s\n", service, objpath, iface);
+  return send_message_via_dbus (method, repeat, &objpath, &iface);
 }
 
 // expecting something like ./miniclient azur voldown 5
@@ -137,10 +140,5 @@ main (const int argc, const char **argv)
   }
 
   //fprintf (stderr, "service = %s, method = %s, repeat = %d\n", service, method, repeat);
-  if (strcmp("lgtv", service) == 0) {
-    return send_lgtv_service(method, repeat);
-  }
-  else {
-    return send_azur_service(method, repeat);
-  }
+  return send_service(service, method, repeat);
 }

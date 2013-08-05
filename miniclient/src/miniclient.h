@@ -35,10 +35,7 @@
 #define CMD_EXIST_ERROR 4
 
 #define RS232SERVER_BUS_NAME "uk.co.madeo.rs232server"
-#define AZURSERVICE_IFACE "uk.co.madeo.rs232server.azur"
-#define AZURSERVICE_OBJ_PATH "/uk/co/madeo/rs232server/azur"
-#define LGTVSERVICE_IFACE "uk.co.madeo.rs232server.lgtv"
-#define LGTVSERVICE_OBJ_PATH "/uk/co/madeo/rs232server/lgtv"
+#define RS232SERVER_OBJ_PATH "/uk/co/madeo/rs232server"
 
 #define MAX_STR_SIZE 30
 #define DBUS_REPLY_TIMEOUT 30000
