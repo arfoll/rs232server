@@ -10,3 +10,7 @@ model = 340R
 [LgtvService]
 tty = /dev/ttyUSB1
 model = MD27
+
+[PioneerService]
+tty = /dev/ttyS0
+model = KRL-32V

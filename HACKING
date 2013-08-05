@@ -4,9 +4,10 @@ The idea of rs232server is to run a server that listens to Dbus commands. There
 can be multiple services. Each service has its own queue and is defined by the
 tty (rs232 port) that is used to communicate to that appliance.
 
-There are currently two supported services in rs232server
+There are currently three supported services in rs232server
 - AzurService - controls an Azur Amplifier/Receiver
 - LgtvService - controls an LG TV
+- PioneerService - controls a Pioneer TV set (KRL-32V)
 
 The aim are to make services inherit from BaseService so the actual service file contains very little
 but a little handling code for maybe the return codes and special error conditions. LgtvService is a
