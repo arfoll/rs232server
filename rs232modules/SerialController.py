@@ -50,7 +50,7 @@ class SerialController:
   def cmd(self, cmd, read=False):
     try:
       if cmd is not "clear":
-        numBytes = self.ser.write(cmd)
+        numBytes = self.ser.write(str(cmd))
         self.serial_logger.debug("Wrote %d bytes", numBytes)
         self.serial_logger.debug (cmd.rstrip() + " called")
         if read:
