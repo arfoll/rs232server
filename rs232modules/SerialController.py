@@ -34,6 +34,7 @@ class SerialController:
     self.serial_logger = logging.getLogger(Shared.APP_NAME + '.' + self.__class__.__name__)
     self.setup_serial(ser)
     self.readval = readval
+    self.serial_logger.debug("Serial is %s", str(ser))
 
     # set up queue and start queue monitoring thread
     self.queue = Queue.Queue()
