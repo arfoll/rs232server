@@ -75,6 +75,8 @@ send_message_via_dbus (const char *method, const int repeat, char *obj, char *if
 	}
       } while (dbus_message_iter_has_next(&args));
     }
+  } else if (reply == NULL && direct) {
+    fprintf(stderr, "We got a dbus timeout, no reply received :(\n");
   }
 
   if (reply)
@@ -103,7 +105,7 @@ send_service (const char *service, const char *method, const int repeat)
   strcpy(objpath, RS232SERVER_OBJ_PATH);
   strcat(objpath, "/");
   strcat(objpath, service);
-  fprintf(stdout, "Using service %s on Obj %s and iface %s\n", service, objpath, iface);
+  //fprintf(stdout, "Using service %s on Obj %s and iface %s\n", service, objpath, iface);
   return send_message_via_dbus (method, repeat, &objpath, &iface);
 }
 
