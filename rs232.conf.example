@@ -14,3 +14,7 @@ model = MD27
 [PioneerService]
 tty = /dev/ttyS0
 model = KRL-32V
+
+[ArcamService]
+tty = /dev/ttyS1
+model = XXX
