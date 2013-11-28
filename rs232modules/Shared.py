@@ -15,9 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-SHORT_NAME="rs232"
-CONF_PATH_DIR="/etc/"
-CONF_PATH=CONF_PATH_DIR+SHORT_NAME+".conf"
-APP_NAME=SHORT_NAME+"server"
+CONF_NAME="rs232"
+SYS_CONF_PATH="/etc/"
+USER_CONF_PATH="~/."
+CONF_PREFIX=".conf"
+
+SYS_CONF=SYS_CONF_PATH+CONF_NAME+CONF_PREFIX
+USER_CONF=USER_CONF_PATH+CONF_NAME+CONF_PREFIX
+DEV_CONF=CONF_NAME+CONF_PREFIX
+
+APP_NAME=CONF_NAME+"server"
 
 DELAY=0.1

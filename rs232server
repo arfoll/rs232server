@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import sys
 import gobject
 import argparse
@@ -65,12 +66,13 @@ def main():
   logger = logging.getLogger(rs232modules.Shared.APP_NAME)
   configureLogging(args.verbose, args.dev, logger)
 
-  # read configuration file
+  # read configuration file according to priorities
   parser = ConfigParser.SafeConfigParser()
-  try:
-    parser.readfp(open(rs232modules.Shared.CONF_PATH))
-  except:
-    logger.error('failed to read ' + rs232modules.Shared.CONF_PATH)
+  filenames = [rs232modules.Shared.SYS_CONF, os.path.expanduser(rs232modules.Shared.USER_CONF), rs232modules.Shared.DEV_CONF]
+  readfiles = parser.read(filenames)
+  logger.debug('config files read: ' + str(readfiles)[1:-1])
+  if not readfiles:
+    logger.error('failed to read any configuration files. Looked in ' + str(filenames)[1:-1])
     exit(1)
 
   # start dbus mainloop
@@ -93,7 +95,7 @@ def main():
       #if not issubclass(service, BaseService): 
       #  raise Exception("Class is not subclass of BaseService")
     except ConfigParser.NoOptionError, err:
-      logger.error('%s in %s', str(err), rs232modules.Shared.CONF_PATH)
+      logger.error('%s in %s', str(err), str(readfiles)[1:-1])
       exit(1)
     except invalidtty, e:
       logger.error('%s', str(e))
