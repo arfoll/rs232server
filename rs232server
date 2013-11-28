@@ -87,11 +87,11 @@ def main():
     try:
       tty = parser.get(section, 'tty')
       x = __import__('rs232modules.' + str(section), globals(), locals(), [section], -1)
-      service = eval('x.' + section)(tty,bus_name)
+      service = eval('x.' + section)(tty, bus_name)
       try:
         service.set_model(parser.get(section, 'model'))
       except Exception, e:
-        logger.debug('No model found in config file %s' ,str(e))
+        logger.debug('No model found in config file %s', str(e))
       #if not issubclass(service, BaseService): 
       #  raise Exception("Class is not subclass of BaseService")
     except ConfigParser.NoOptionError, err:
