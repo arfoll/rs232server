@@ -24,7 +24,7 @@ import ConfigParser
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 import rs232modules.Shared
-from rs232modules.BaseService import BaseService, invalidtty
+from rs232modules.BaseService import invalidtty
 
 LOG_FILENAME = '/tmp/' + rs232modules.Shared.APP_NAME + '.log'
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
