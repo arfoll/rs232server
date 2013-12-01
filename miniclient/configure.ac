@@ -15,6 +15,7 @@ PKG_PROG_PKG_CONFIG
 
 # Checks for libraries.
 PKG_CHECK_MODULES(DBUS, dbus-1)
+PKG_CHECK_MODULES(XML, libxml-2.0)
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdint.h stdlib.h string.h unistd.h])

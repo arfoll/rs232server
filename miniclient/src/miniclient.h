@@ -26,17 +26,26 @@
 #include <string.h>
 #include <limits.h>
 #include <errno.h>
+
 #include <dbus/dbus.h>
+
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 
 #define SUCCESS 0
 #define GENERAL_ERROR 1
 #define GENERAL_DBUS_ERROR 2
-#define ARG_PARSE_ERROR 3
-#define CMD_EXIST_ERROR 4
+#define GENERAL_XML_ERROR 3
+#define ARG_PARSE_ERROR 4
+#define CMD_EXIST_ERROR 5
 
 #define RS232SERVER_BUS_NAME "uk.co.madeo.rs232server"
 #define RS232SERVER_OBJ_PATH "/uk/co/madeo/rs232server"
+#define RS232SERVER_METHOD "send_cmd"
+#define INTROSPECT_IFACE "org.freedesktop.DBus.Introspectable"
+#define INTROSPECT_METHOD "Introspect"
 
 #define MAX_STR_SIZE 30
-#define DBUS_REPLY_TIMEOUT 30000
+#define DBUS_REPLY_TIMEOUT 50000
+#define REPEAT_NONE 1
 
