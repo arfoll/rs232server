@@ -20,7 +20,7 @@ import time
 import Queue
 import logging
 import serial
-import Shared 
+import Shared
 from threading import Thread
 from threading import Timer
 
@@ -78,7 +78,7 @@ class SerialController:
 
   def add(self, cmd, direct=False):
     if direct:
-      #direct execution allows for return
+      # direct execution allows for return
       return self.cmd(cmd, True)
     else:
       self.queue.put(cmd, True)
