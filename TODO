@@ -1,4 +1,3 @@
-- Listing of services from rs232server cli
 - Manual overriding of tty/model in rs232server cli
 - Does ArcamService really need a DELAY override?
 - Should PioneerService DELAY override only happen if model == KRL-32V?
