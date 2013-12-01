@@ -1,14 +1,26 @@
 INTRO
 
-The Cambridge Audio Azur series HDMI receivers (it seems pre HDMI receivers do not have them) have RS232 serial ports that can be used to control most if not all of the functionality.
+The Cambridge Audio Azur series HDMI receivers (it seems pre HDMI receivers do not have them) have RS232 serial ports that can be used to control most if not all of the functionality. After doing the work on Azur receivers, I started working on controlling my LG TV and later a Pioneer TV that was lying around at work. If interested in doing some coding, read HACKING
 
 COMPATIBILITY
 
+rs232server splits hardware support into loadable modules. I've listed the hardware I've used the modules on and hardware I believe they should work on:
+
+Azur Service:
 Azur 340R (tested on SW version 1.3, protocol version 1.1)
 Azur 540R version 3 (untested but assumed to work)
 Azur 640R (tested on SW version 1.5, protocol version 1.0)
 Azur 650R (unknown but basic protocol appears unchanged from doc)
 Azur 551R (unknown but has rs232 port)
+
+Lgtv Service:
+LG M2762DP (UK model)
+
+Pioneer Service:
+KRL-32V
+
+Arcam Service:
+Unknown
 
 Personally I use the 340R (upstairs) and 640R (downstairs). The 340R uses miniclient with a bash script and the HTPC with the 640R uses the xbmc plugin. Both systems are fairly reliable, and I run git HEAD. Please send me any issues/improvements/comments you may have! I'd love to hear if you are using the SW even if you disliked it ;-)
 
@@ -41,4 +53,5 @@ Also provided is an xbmc (eden/11.x) service addon (see http://github.com/arfoll
 THANKS
 Tom Carlson - original creator of the python script to control Azur 340R
 Jon Smith - blog post on lgtv serial communication
-Suan-Aik Yeo - developer of libLGTV_serial where I get all my lgtv commands from
+Suan-Aik Yeo - developer of libLGTV_serial where I get most of my lgtv commands from
+Sander Jongeleen - creating & testing arcam service

@@ -25,6 +25,7 @@ import pioneer_cmds
 PIONEERTVSERVICE_IFACE = 'uk.co.madeo.rs232server.pioneer'
 PIONEERTVSERVICE_OBJ_PATH = '/uk/co/madeo/rs232server/pioneer'
 
+# Delay override is advised on KRL-32V
 DELAY = 1
 BAUD_RATE = 9600
 BYTESIZE = 8

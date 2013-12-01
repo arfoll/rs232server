@@ -1,5 +1,5 @@
 - Listing of services from rs232server cli
 - Manual overriding of tty/model in rs232server cli
-- move rs232server to be an object
-- move all object constants to the object
-- move LOG_FILENAME & similar to shared - what is DELAY doing in there?
+- Does ArcamService really need a DELAY override?
+- Should PioneerService DELAY override only happen if model == KRL-32V?
+- Move to cmake
