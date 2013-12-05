@@ -65,68 +65,21 @@ parse_instropect_xml(char *data)
 }
 
 int
-instrospect_bus ()
-{
-  DBusConnection *connection;
-  DBusError error;
-  DBusMessage *message;
-  DBusMessage *reply;
-  int ret = SUCCESS;
-
-  dbus_error_init (&error);
-
-  connection = dbus_bus_get (DBUS_BUS_SYSTEM, &error);
-  if (connection == NULL) {
-    fprintf(stderr, "Failed to open connection to bus: %s\n", error.message);
-    dbus_error_free (&error);
-    return GENERAL_DBUS_ERROR;
-  }
-
-  /* Construct the message */
-  message = dbus_message_new_method_call (RS232SERVER_BUS_NAME, RS232SERVER_OBJ_PATH, INTROSPECT_IFACE, INTROSPECT_METHOD);
-  /* send message & flush */
-  reply = dbus_connection_send_with_reply_and_block (connection, message, DBUS_REPLY_TIMEOUT, &error);
-
-  if (reply != NULL) {
-    DBusMessageIter args;
-    int type;
-    if (dbus_message_iter_init(reply, &args)) {
-      do {
-        type = dbus_message_iter_get_arg_type (&args);
-	if (type == DBUS_TYPE_STRING) {
-	  char *replyContent = NULL;
-	  dbus_message_iter_get_basic(&args, &replyContent);
-          ret = parse_instropect_xml(replyContent);
-	} else {
-          printf("Received unexpected dbus reply type: (%d)\n", type);
-        }
-      } while (dbus_message_iter_has_next(&args));
-    }
-  } else {
-    fprintf(stderr, "We got a dbus timeout, no reply received :(\n");
-  }
-
-  if (reply)
-    dbus_message_unref (reply);
-  dbus_connection_flush(connection);
-  /* clean up */
-  dbus_message_unref (message);
-  dbus_connection_unref (connection);
-  dbus_error_free (&error);
-
-  return ret;
-}
-
-int
-send_message_via_dbus (const char *method, const int repeat, char *obj, char *iface)
+send_message_via_dbus (int repeat, char *obj, char *iface, char *method, const char *param)
 {
   DBusConnection *connection;
   DBusError error;
   DBusMessage *message;
   DBusMessage *reply;
   dbus_bool_t direct = 0;
+  dbus_bool_t introspect = 0;
+  int ret = SUCCESS;
 
+  // if we have one repeat then we will try get a response
   if (repeat == 1) {
+    direct = 1;
+  } else if (repeat == -1) {
+    introspect = 1;
     direct = 1;
   }
 
@@ -140,14 +93,15 @@ send_message_via_dbus (const char *method, const int repeat, char *obj, char *if
   }
 
   /* Construct the message */
-  message = dbus_message_new_method_call (RS232SERVER_BUS_NAME, obj, iface, RS232SERVER_METHOD);
-  /* append arguments */
-  dbus_message_append_args (message, DBUS_TYPE_STRING, &method, DBUS_TYPE_INT32, &repeat, DBUS_TYPE_BOOLEAN, &direct, DBUS_TYPE_INVALID);
+  message = dbus_message_new_method_call (RS232SERVER_BUS_NAME, obj, iface, method);
+
+  if (strcmp(RS232SERVER_OBJ_PATH, obj) != 0) {
+    /* append arguments */
+    dbus_message_append_args (message, DBUS_TYPE_STRING, &param, DBUS_TYPE_INT32, &repeat, DBUS_TYPE_BOOLEAN, &direct, DBUS_TYPE_INVALID);
+  }
   /* send message & flush */
   reply = dbus_connection_send_with_reply_and_block (connection, message, DBUS_REPLY_TIMEOUT, &error);
   
-//  fprintf(stderr, "Dbus returned: %s\n", error);
-
   if (reply != NULL && direct) {
     DBusMessageIter args;
     int type;
@@ -157,9 +111,12 @@ send_message_via_dbus (const char *method, const int repeat, char *obj, char *if
 	if (type == DBUS_TYPE_STRING) {
 	  char *replyContent = NULL;
 	  dbus_message_iter_get_basic(&args, &replyContent);
-          printf("%s\n", replyContent);
+          if (introspect)
+            ret = parse_instropect_xml(replyContent);
+          else
+            printf("%s\n", replyContent);
 	} else {
-          printf("Received unexpected dbus reply type: (%d)\n", type);
+          fprintf(stderr, "Received unexpected dbus reply type: (%d)\n", type);
         }
       } while (dbus_message_iter_has_next(&args));
     }
@@ -177,13 +134,13 @@ send_message_via_dbus (const char *method, const int repeat, char *obj, char *if
 
   /* make sure the line is clear when sending repeat messages and not collecting responses over serial */
   if (!direct)
-    send_message_via_dbus ("clear", 1, obj, iface);
+    send_message_via_dbus (1, obj, iface, method, "clear");
 
-  return SUCCESS; 
+  return ret;
 }
 
 int
-send_service (const char *service, const char *method, const int repeat)
+send_service (const char *service, const char *method, int repeat)
 {
   char objpath[255];
   char iface[255];
@@ -194,7 +151,7 @@ send_service (const char *service, const char *method, const int repeat)
   strcat(objpath, "/");
   strcat(objpath, service);
   //fprintf(stdout, "Using service %s on Obj %s and iface %s\n", service, objpath, iface);
-  return send_message_via_dbus (method, repeat, &objpath, &iface);
+  return send_message_via_dbus (repeat, &objpath, &iface, RS232SERVER_METHOD, method);
 }
 
 // expecting something like ./miniclient azur voldown 5
@@ -210,7 +167,8 @@ main (const int argc, const char **argv)
 
   /* if we don't get any arguments exit */
   if (argc == 2 && (strcmp(service, "list") == 0)) {
-    return instrospect_bus();
+    // -1 repeat signifies we are in instrospect mode
+    return send_message_via_dbus (-1, RS232SERVER_OBJ_PATH, INTROSPECT_IFACE, INTROSPECT_METHOD, method);
   } else if (argc < 3) {
     fprintf (stderr, "%s invalid arguments!\n", argv[0]);
     print_help();
