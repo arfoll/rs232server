@@ -80,7 +80,9 @@ def main():
   try:
     bus_name = dbus.service.BusName(RS232SERVER_BUS_NAME, bus=dbus.SystemBus())
   except:
-    logger.error('fatal dbus error')
+    e = sys.exc_info()
+    logger.error(e)
+    logger.error('fatal dbus error: have you set up a dbus config?')
     exit(1)
 
   for section in parser.sections():
