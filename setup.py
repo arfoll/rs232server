@@ -7,6 +7,6 @@ setup(name='rs232server',
       author='Brendan Le Foll',
       author_email='brendan@fridu.org',
       url='http://github.com/arfoll/rs232server',
-      packages=['rs232modules'] ,
+      packages=['rs232modules'],
       scripts=['rs232server'],
      )
