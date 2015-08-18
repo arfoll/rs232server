@@ -1,12 +1,10 @@
-INTRO
-
 The Cambridge Audio Azur series HDMI receivers (it seems pre HDMI receivers do
 not have them) have RS232 serial ports that can be used to control most if not
 all of the functionality. After doing the work on Azur receivers, I started
 working on controlling my LG TV and later a Pioneer TV that was lying around at
 work. If interested in doing some coding, read HACKING
 
-COMPATIBILITY
+### COMPATIBILITY
 
 rs232server splits hardware support into loadable modules. I've listed the
 hardware I've used the modules on and hardware I believe they should work on:
@@ -32,7 +30,7 @@ Both systems are fairly reliable, and I run git HEAD. Please send me any
 issues/improvements/comments you may have! I'd love to hear if you are using
 the SW even if you disliked it ;-)
 
-PROGRAM
+### PROGRAM
 
 The program runs in two parts. A python daemon runs in the background and
 responds to queries from the cli using dbus.  The hope is to decouple the two
@@ -40,27 +38,42 @@ sufficiently so that other clients can be written. The hope is to eventually
 have the script listening to the users media player in order to switch on when
 neccessary, replace alsa as the volume controller, etc...
 
-INSTALL
+### INSTALL
 
 Just like a standard python module use:
+```{sh}
 sudo ./setup.py install
+```
 or to install it locally, use:
+```{sh}
 ./setup.py install --user
+```
+The miniclient uses autotools (urgh) so just use
+```{sh}
+cd miniclient
+./autogen.sh
+./configure --prefix=/usr
+make
+sudo make install
+```
 
-GETTING SERVICE READY
+### GETTING SERVICE READY
 
 Modify rs232.conf.example with your favourite text editor to map to your serial devices.
 
+```{sh}
 sudo cp rs232.conf.example /etc/rs232.conf
 sudo cp uk.co.madeo.rs232server.conf /etc/dbus-1/system.d/
 sudo cp rs232server.service /usr/lib/systemd/system/
+sudo systemctl start rs232server
+```
 
 The script requires python2, python-pyserial and dbus
 
 To connect the Amplifier (Azur 340R), use a null modem cable to a serial port
 or USB->serial controller
 
-USE
+### USE
 The rs232server can be started like any python program just run
 ./rs232server.  Run ./rs232server --help for further info. A tty can be set if
 ttyUSB0 is not what your amplifier is connected to.
@@ -71,7 +84,7 @@ the services. To disable a service simply comment out the service in the .conf
 Also provided is an xbmc (eden/11.x) service addon (see
 http://github.com/arfoll/script.madeo.rs232server)
 
-THANKS
+### THANKS
 Tom Carlson - original creator of the python script to control Azur 340R
 Jon Smith - blog post on lgtv serial communication
 Suan-Aik Yeo - developer of libLGTV_serial
