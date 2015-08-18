@@ -47,6 +47,14 @@ sudo ./setup.py install
 or to install it locally, use:
 ./setup.py install --user
 
+GETTING SERVICE READY
+
+Modify rs232.conf.example with your favourite text editor to map to your serial devices.
+
+sudo cp rs232.conf.example /etc/rs232.conf
+sudo cp uk.co.madeo.rs232server.conf /etc/dbus-1/system.d/
+sudo cp rs232server.service /usr/lib/systemd/system/
+
 The script requires python2, python-pyserial and dbus
 
 To connect the Amplifier (Azur 340R), use a null modem cable to a serial port
