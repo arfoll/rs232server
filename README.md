@@ -82,7 +82,7 @@ You will need to place rs232.conf in /etc and configure the correct ttys for
 the services. To disable a service simply comment out the service in the .conf
 
 Also provided is an xbmc (eden/11.x) service addon (see
-http://github.com/arfoll/script.madeo.rs232server)
+https://github.com/arfoll/service.madeo.rs232server)
 
 ### THANKS
 Tom Carlson - original creator of the python script to control Azur 340R
