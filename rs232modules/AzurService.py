@@ -70,7 +70,7 @@ class AzurService(BaseService):
     if direct:
       code = self.queue.add(azur_cmds.commands[cmd].decode('ascii'), direct)
       self.last = (cmd, self.friendlyReply(code, cmd))
-      self.logger.debug("Reply is (%s, %s)", self.last[0], self.last[1])
+      self.logger.debug("Reply is (%s, %s)", self.last[0].rstrip(), self.last[1].rtrip())
       return self.last[1]
     else:
       self.queue.add(azur_cmds.commands[cmd].decode('ascii'), direct)
