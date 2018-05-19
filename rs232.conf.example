@@ -7,6 +7,10 @@
 tty = /dev/ttyUSB0
 model = 340R
 
+[Azur1Service]
+tty = /dev/ttyUSB0
+model = 351R
+
 [LgtvService]
 tty = /dev/ttyUSB1
 model = MD27
