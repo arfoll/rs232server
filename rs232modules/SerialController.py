@@ -21,6 +21,7 @@ import Queue
 import logging
 import serial
 import Shared
+from threading import Lock
 from threading import Thread
 from threading import Timer
 
@@ -35,6 +36,9 @@ class SerialController:
     self.setup_serial(ser)
     self.readval = readval
     self.serial_logger.debug("Serial is %s", str(ser))
+
+    # let's try make sure only one thread goes and writes to serial port
+    self.serial_lock = Lock()
 
     # set up queue and start queue monitoring thread
     self.queue = Queue.Queue()
@@ -60,7 +64,8 @@ class SerialController:
   def cmd(self, cmd, read=False):
     try:
       if cmd is not "clear":
-        numBytes = self.ser.write(str(cmd))
+        with self.serial_lock:
+          numBytes = self.ser.write(str(cmd))
         self.serial_logger.debug("Wrote %d bytes", numBytes)
         self.serial_logger.debug (cmd.rstrip() + " called")
         if read:
