@@ -66,8 +66,9 @@ class Azur1Service(BaseService):
       return code.replace(azur1_cmds.replies[cmd], '')
 
   def fire_cmd(self, cmd, direct=False):
-    self.logger.debug("sent command : %s", cmd)
+    self.logger.debug("Sent command : %s", cmd)
     if direct:
+      self.queue.clear()
       code = self.queue.add(azur1_cmds.commands[cmd].decode('ascii'), direct)
       self.last = (cmd, self.friendlyReply(code, cmd))
       self.logger.debug("Reply is (%s, %s)", self.last[0].rstrip(), self.last[1].rstrip())
