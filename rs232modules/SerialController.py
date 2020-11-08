@@ -1,6 +1,4 @@
-#!/usr/bin/env python2
-
-# Copyright (C) 2011,2012,2013 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011-2020 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,10 +15,10 @@
 
 import sys
 import time
-import Queue
+import queue
 import logging
 import serial
-import Shared
+from . import Shared
 from threading import Lock
 from threading import Thread
 from threading import Timer
@@ -41,7 +39,7 @@ class SerialController:
     self.serial_lock = Lock()
 
     # set up queue and start queue monitoring thread
-    self.queue = Queue.Queue()
+    self.queue = queue.Queue()
     self.t = Thread(target=self.monitor)
     self.t.daemon = True
     self.t.start()
@@ -63,7 +61,7 @@ class SerialController:
 
   def cmd(self, cmd, read=False):
     try:
-      if cmd is not "clear":
+      if cmd != "clear":
         with self.serial_lock:
           numBytes = self.ser.write(str(cmd))
         self.serial_logger.debug("Wrote %d bytes", numBytes)

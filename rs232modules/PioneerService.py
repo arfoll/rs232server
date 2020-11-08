@@ -1,6 +1,4 @@
-#!/usr/bin/env python2
-
-# Copyright (C) 2011,2012,2013 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011-2020 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,10 +15,10 @@
 
 import dbus.service
 from dbus.mainloop.glib import DBusGMainLoop
-from SerialController import SerialController
-from BaseService import BaseService
+from .SerialController import SerialController
+from .BaseService import BaseService
 
-import pioneer_cmds
+from . import pioneer_cmds
 
 PIONEERTVSERVICE_IFACE = 'uk.co.madeo.rs232server.pioneer'
 PIONEERTVSERVICE_OBJ_PATH = '/uk/co/madeo/rs232server/pioneer'

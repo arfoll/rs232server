@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-# Copyright (C) 2011,2012,2013 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011-2020 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,11 +17,11 @@
 
 import os
 import sys
-import gobject
 import argparse
 import logging
-import ConfigParser
+import configparser
 import dbus
+from gi.repository import GLib
 from dbus.mainloop.glib import DBusGMainLoop
 import rs232modules.Shared
 from rs232modules.BaseService import invalidtty
@@ -40,7 +40,7 @@ def configureLogging(verbose, dev, logger):
   try:
     fh = logging.FileHandler(LOG_FILENAME)
   except:
-    print 'Check you have write permissions to', LOG_FILENAME
+    print('Check you have write permissions to', LOG_FILENAME)
     exit(1)
   fh.setLevel(logging.DEBUG)
   fh.setFormatter(formatter)
@@ -58,7 +58,7 @@ def main():
   parser = argparse.ArgumentParser(description=DESCRIPTION)
   parser.add_argument('--verbose', '-v', action='store_true', dest='verbose', default=False,
                       help='enables more verbose output')
-  parser.add_argument('--dev', '-d', action='store_true', dest='dev', default=False,
+  parser.add_argument('--dev', '-d', action='store_true', dest='dev', default=True,
                       help='development mode disables some commands that could be dangerous. Read documentation before using')
   args = parser.parse_args()
 
@@ -67,7 +67,7 @@ def main():
   configureLogging(args.verbose, args.dev, logger)
 
   # read configuration file according to priorities
-  parser = ConfigParser.SafeConfigParser()
+  parser = configparser.ConfigParser()
   filenames = [rs232modules.Shared.SYS_CONF, os.path.expanduser(rs232modules.Shared.USER_CONF), rs232modules.Shared.DEV_CONF]
   readfiles = parser.read(filenames)
   logger.debug('config files read: ' + str(readfiles)[1:-1])
@@ -80,34 +80,33 @@ def main():
   try:
     bus_name = dbus.service.BusName(RS232SERVER_BUS_NAME, bus=dbus.SystemBus())
   except:
-    e = sys.exc_info()
-    logger.error(e)
+    logger.info(sys.exc_info()[0])
     logger.error('fatal dbus error: have you set up a dbus config?')
     exit(1)
 
   for section in parser.sections():
     try:
       tty = parser.get(section, 'tty')
-      x = __import__('rs232modules.' + str(section), globals(), locals(), [section], -1)
+      x = __import__('rs232modules.' + str(section), globals(), locals(), [section], 0)
       service = eval('x.' + section)(tty, bus_name)
       try:
         service.set_model(parser.get(section, 'model'))
-      except Exception, e:
+      except Exception as e:
         logger.debug('No model found in config file %s', str(e))
       #if not issubclass(service, BaseService): 
       #  raise Exception("Class is not subclass of BaseService")
-    except ConfigParser.NoOptionError, err:
-      logger.error('%s in %s', str(err), str(readfiles)[1:-1])
+    except configparser.NoOptionError as e:
+      logger.error('%s in %s', str(e), str(readfiles)[1:-1])
       exit(1)
-    except invalidtty, e:
+    except invalidtty as e:
       logger.error('%s', str(e))
       exit(1)
-    except Exception, e:
-      logger.debug('%s', str(e))
+    except:
+      logger.debug(sys.exc_info()[0])
       logger.error('Check that %s is a valid service name', section)
       exit(1)
 
-  loop = gobject.MainLoop()
+  loop = GLib.MainLoop()
   loop.run()
 
 if __name__ == "__main__":

@@ -7,7 +7,7 @@ pkgdesc="script to control rs232server"
 arch=('any')
 url="http://github.com/arfoll/rs232server"
 license=('GPL')
-depends=('python2-pyserial' 'python2-dbus' 'python2-gobject2' 'dbus-glib')
+depends=('python-pyserial' 'python-dbus' 'python-gobject2' 'dbus-glib')
 backup=('etc/rs232.conf')
 
 _prefix='/usr'

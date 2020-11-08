@@ -1,6 +1,4 @@
-#!/usr/bin/env python2
-
-# Copyright (C) 2018 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2018-2020 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,10 +15,10 @@
 
 import dbus.service
 from dbus.mainloop.glib import DBusGMainLoop
-from SerialController import SerialController
-from BaseService import BaseService
+from .SerialController import SerialController
+from .BaseService import BaseService
 
-import azur1_cmds
+from . import azur1_cmds
 
 AZUR1SERVICE_IFACE = 'uk.co.madeo.rs232server.azur1'
 AZUR1SERVICE_OBJ_PATH = '/uk/co/madeo/rs232server/azur1'
@@ -44,7 +42,7 @@ class Azur1Service(BaseService):
 
   def findKey(self, val):
     try:
-      return [k for k, v in azur1_cmds.errors.iteritems() if v == val][0]
+      return [k for k, v in azur1_cmds.errors.items() if v == val][0]
     except:
       return 0
 
