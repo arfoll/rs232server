@@ -63,7 +63,7 @@ class SerialController:
     try:
       if cmd != "clear":
         with self.serial_lock:
-          numBytes = self.ser.write(str(cmd))
+          numBytes = self.ser.write(cmd.encode('ascii'))
         self.serial_logger.debug("Wrote %d bytes", numBytes)
         self.serial_logger.debug (cmd.rstrip() + " called")
         if read:

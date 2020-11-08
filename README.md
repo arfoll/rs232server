@@ -44,6 +44,13 @@ sufficiently so that other clients can be written. The hope is to eventually
 have the script listening to the users media player in order to switch on when
 neccessary, replace alsa as the volume controller, etc...
 
+### DEPENDENCIES
+
+By no means an exhaustive list, but some good hints :)
+```
+pacman -S python-pyserial python-dbus
+```
+
 ### INSTALL
 
 Just like a standard python module use:

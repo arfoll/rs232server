@@ -58,7 +58,7 @@ def main():
   parser = argparse.ArgumentParser(description=DESCRIPTION)
   parser.add_argument('--verbose', '-v', action='store_true', dest='verbose', default=False,
                       help='enables more verbose output')
-  parser.add_argument('--dev', '-d', action='store_true', dest='dev', default=True,
+  parser.add_argument('--dev', '-d', action='store_true', dest='dev', default=False,
                       help='development mode disables some commands that could be dangerous. Read documentation before using')
   args = parser.parse_args()
 
