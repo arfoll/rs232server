@@ -9,6 +9,12 @@ work. If interested in doing some coding, read HACKING
 rs232server splits hardware support into loadable modules. I've listed the
 hardware I've used the modules on and hardware I believe they should work on:
 
+Azur Service:
+All CA receivers should work apart from the 540R v1-2 (v3 should work) as they
+do not have an rs232 port.
+Azur 340R (tested on SW version 1.3, protocol version 1.1)
+Azur 640R (tested on SW version 1.5, protocol version 1.0)
+
 Azur1 Service:
 CA receivers like the 351R (and maybe others) require padding for some of the
 codes and seem to be very strict on this. They however have way way better
@@ -17,12 +23,6 @@ support the 351R as best as I can. The codes are also a bit different between
 this series of amps and the x40R series since there is tvarc inputs etc...
 Currently it's very very basic.
 
-Azur Service:
-All CA receivers should work apart from the 540R v1-2 (v3 should work) as they
-do not have an rs232 port.
-Azur 340R (tested on SW version 1.3, protocol version 1.1)
-Azur 640R (tested on SW version 1.5, protocol version 1.0)
-
 Lgtv Service:
 LG M2762DP (UK model)
 
@@ -30,7 +30,7 @@ Pioneer Service:
 KRL-32V
 
 Arcam Service:
-AVR300
+AVR300 - should work on other Arcam AVRs but I don't have one :)
 
 Personally I use a 340R and the system is fairly reliable on git HEAD. Please
 send me any issues/improvements/comments you may have! I'd love to hear if you
@@ -98,8 +98,8 @@ Also provided is an xbmc (eden/11.x) service addon (see
 https://github.com/arfoll/service.madeo.rs232server)
 
 ### THANKS
-Tom Carlson - original creator of the python script to control Azur 340R
-Jon Smith - blog post on lgtv serial communication
-Suan-Aik Yeo - developer of libLGTV_serial
-Sander Jongeleen - Initial arcam service work
-Rob Sharp - For testing & mapping out features on arcam service
+- Tom Carlson - original creator of the python script to control Azur 340R
+- Jon Smith - blog post on lgtv serial communication
+- Suan-Aik Yeo - developer of libLGTV_serial
+- Sander Jongeleen - Initial arcam service work
+- Rob Sharp - For testing & mapping out features on arcam service
