@@ -41,7 +41,7 @@ class PioneerService(BaseService):
       self.logger.debug("Getting help!")
       return self.help()
     if (check):
-      return self.queue.add(pioneer_cmds.commands[cmd], check)
+      return self.ser.cmd(pioneer_cmds.commands[cmd], check)
     for i in range(0, repeat):
-      self.queue.add(pioneer_cmds.commands[cmd], check)
+      self.ser.cmd(pioneer_cmds.commands[cmd], check)
     return ""

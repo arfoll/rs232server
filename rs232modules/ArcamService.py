@@ -40,8 +40,8 @@ class ArcamService(BaseService):
       self.logger.debug("Getting help!")
       return self.help()
     if (check):
-      val = self.queue.add(arcam_cmds.commands[cmd], check)
+      val = self.ser.cmd(arcam_cmds.commands[cmd], check)
       return val
     for i in range(0, repeat):
-      self.queue.add(arcam_cmds.commands[cmd], check)
+      self.ser.cmd(arcam_cmds.commands[cmd], check)
     return ""

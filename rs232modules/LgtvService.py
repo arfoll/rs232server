@@ -40,7 +40,7 @@ class LgtvService(BaseService):
       self.logger.debug("Getting help!")
       return self.help()
     if (check):
-      return self.queue.add(lgtv_cmds.commands[cmd] + b'\r', check)
+      return self.ser.cmd(lgtv_cmds.commands[cmd] + b'\r', check)
     for i in range(0, repeat):
-      self.queue.add(lgtv_cmds.commands[cmd] + b'\r', check)
+      self.ser.cmd(lgtv_cmds.commands[cmd] + b'\r', check)
     return ""

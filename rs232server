@@ -89,8 +89,6 @@ def main():
   for section in parser.sections():
     try:
       tty = parser.get(section, 'tty')
-      #x = __import__('rs232modules.' + str(section), globals(), locals(), [section], 0)
-      #service = eval('x.' + section)(tty, bus_name)
       logger.debug("service is %s", str(section))
       x = getattr(importlib.import_module("rs232modules." + section), section)
       service = x(tty, bus_name)

@@ -66,13 +66,13 @@ class Azur1Service(BaseService):
   def fire_cmd(self, cmd, direct=False):
     self.logger.debug("Sent command : %s", cmd)
     if direct:
-      self.queue.clear()
-      code = self.queue.add(azur1_cmds.commands[cmd], direct)
+      self.ser.clear()
+      code = self.ser.cmd(azur1_cmds.commands[cmd], direct)
       self.last = (cmd, self.friendlyReply(code, cmd))
       self.logger.debug("Reply is (%s, %s)", self.last[0].rstrip(), self.last[1].rstrip())
       return self.last[1]
     else:
-      self.queue.add(azur1_cmds.commands[cmd], direct)
+      self.ser.cmd(azur1_cmds.commands[cmd], direct)
 
   # typical call would be ('poweron', 1, False)
   @dbus.service.method(AZUR1SERVICE_IFACE, in_signature='sib', out_signature='s')
@@ -98,5 +98,5 @@ class Azur1Service(BaseService):
 
   @dbus.service.method(AZUR1SERVICE_IFACE)
   def clear(self):
-    self.queue.add("clear", True)
+    self.ser.cmd("clear", True)
 

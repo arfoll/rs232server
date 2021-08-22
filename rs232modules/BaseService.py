@@ -40,7 +40,7 @@ class BaseService(dbus.service.Object):
     except:
       raise invalidtty("Could not open " + tty + ", check it is valid and that the user has permission to use it.")
 
-    self.queue = SerialController(ser, readval)
+    self.ser = SerialController(ser, readval)
     self.logger.info("Started service on %s", obj_path)
 
   def help(self):
@@ -60,7 +60,9 @@ class BaseService(dbus.service.Object):
   # TODO: make these @dbus methods that are inherited from
   def send_cmd(self, cmd, repeat, check):
     self.logger.info("cmd %s sent", cmd)
+    self.ser.cmd(cmd)
     return
 
   def clear(self):
-    return NotImplemented
+    self.ser.clear()
+    return

@@ -14,14 +14,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-import queue
 import sys
-import time
 import serial
-
-from threading import Lock
-from threading import Thread
-from threading import Timer
 
 from . import Shared
 
@@ -33,24 +27,14 @@ class SerialController:
 
   def __init__(self, ser, readval):
     self.serial_logger = logging.getLogger(Shared.APP_NAME + '.' + self.__class__.__name__)
-    self.setup_serial(ser)
-    self.readval = readval
-    self.serial_logger.debug("Serial is %s", str(ser))
 
-    # let's try make sure only one thread goes and writes to serial port
-    self.serial_lock = Lock()
-
-    # set up queue and start queue monitoring thread
-    self.queue = queue.Queue()
-    self.t = Thread(target=self.monitor)
-    self.t.daemon = True
-    self.t.start()
-
-  def setup_serial(self, ser):
     self.ser = ser
     self.ser.flushInput()
     self.ser.flushOutput()
     self.serial_logger.debug("Initialised %s with baud rate %d", ser.name, ser.baudrate)
+
+    self.readval = readval
+    self.serial_logger.debug("Serial is %s", str(ser))
 
   def clear(self):
     self.serial_logger.debug ("Clearing read buffer")
@@ -65,8 +49,7 @@ class SerialController:
     self.serial_logger.debug ("cmd is: %s", cmd)
     try:
       if cmd != "clear":
-        with self.serial_lock:
-          numBytes = self.ser.write(cmd.encode('ascii'))
+        numBytes = self.ser.write(cmd.encode('ascii'))
         self.serial_logger.debug("Wrote %d bytes", numBytes)
         self.serial_logger.debug (cmd.rstrip() + " called")
         if read:
@@ -76,21 +59,3 @@ class SerialController:
         self.clear()
     except:
       self.serial_logger.error ("%s call failed", cmd.rstrip())
-
-  def monitor(self):
-    while True:
-      if not self.queue.empty():
-        item = self.queue.get(True)
-        self.cmd(item)
-        self.queue.task_done()
-        self.ser.flush()
-
-  def add(self, cmd, direct=False):
-    self.serial_logger.debug("cmd %s added to queue", cmd)
-    if direct:
-      # direct execution allows for return
-      return self.cmd(cmd, True)
-    else:
-      self.queue.put(cmd, True)
-      # delay here seems to allow the monitor thread to come to life on my single core CPU
-      time.sleep(DELAY)
