@@ -1,6 +1,4 @@
-#!/usr/bin/python2
-
-# Copyright (C) 2011,2012 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011-2020 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,9 +17,9 @@ import sys
 import dbus
 import dbus.service
 import logging
-import Shared
+from . import Shared
 import serial
-from SerialController import SerialController
+from .SerialController import SerialController
 
 class invalidtty(Exception):
   def __init__(self, value):

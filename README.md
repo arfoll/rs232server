@@ -14,8 +14,8 @@ CA receivers like the 351R (and maybe others) require padding for some of the
 codes and seem to be very strict on this. They however have way way better
 response codes so I made a seperate azur1 service and will modify that to
 support the 351R as best as I can. The codes are also a bit different between
-this series of amps and the 340R since there is tvarc inputs etc... Currently
-it's very very basic.
+this series of amps and the x40R series since there is tvarc inputs etc...
+Currently it's very very basic.
 
 Azur Service:
 All CA receivers should work apart from the 540R v1-2 (v3 should work) as they
@@ -32,11 +32,9 @@ KRL-32V
 Arcam Service:
 AVR300
 
-Personally I use the 340R (upstairs) and 640R (downstairs). The 340R uses
-miniclient with a bash script and the HTPC with the 640R uses the xbmc plugin.
-Both systems are fairly reliable, and I run git HEAD. Please send me any
-issues/improvements/comments you may have! I'd love to hear if you are using
-the SW even if you disliked it ;-)
+Personally I use a 340R and the system is fairly reliable on git HEAD. Please
+send me any issues/improvements/comments you may have! I'd love to hear if you
+are using the SW even if you disliked it ;-)
 
 ### PROGRAM
 
@@ -45,6 +43,13 @@ responds to queries from the cli using dbus.  The hope is to decouple the two
 sufficiently so that other clients can be written. The hope is to eventually
 have the script listening to the users media player in order to switch on when
 neccessary, replace alsa as the volume controller, etc...
+
+### DEPENDENCIES
+
+By no means an exhaustive list, but some good hints :)
+```
+pacman -S python-pyserial python-dbus
+```
 
 ### INSTALL
 
@@ -76,7 +81,7 @@ sudo cp rs232server.service /usr/lib/systemd/system/
 sudo systemctl start rs232server
 ```
 
-The script requires python2, python-pyserial and dbus
+The script requires python3, python-pyserial and dbus
 
 To connect the Amplifier (Azur 340R), use a null modem cable to a serial port
 or USB->serial controller

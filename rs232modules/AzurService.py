@@ -1,6 +1,4 @@
-#!/usr/bin/env python2
-
-# Copyright (C) 2011,2012,2013 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011-2020 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,10 +15,10 @@
 
 import dbus.service
 from dbus.mainloop.glib import DBusGMainLoop
-from SerialController import SerialController
-from BaseService import BaseService
+from .SerialController import SerialController
+from .BaseService import BaseService
 
-import azur_cmds
+from . import azur_cmds
 
 AZURSERVICE_IFACE = 'uk.co.madeo.rs232server.azur'
 AZURSERVICE_OBJ_PATH = '/uk/co/madeo/rs232server/azur'
@@ -44,7 +42,7 @@ class AzurService(BaseService):
 
   def findKey(self, val):
     try:
-      return [k for k, v in azur_cmds.errors.iteritems() if v == val][0]
+      return [k for k, v in azur_cmds.errors.items() if v == val][0]
     except:
       return 0
 
@@ -66,14 +64,14 @@ class AzurService(BaseService):
       return code.replace(azur_cmds.replies[cmd], '')
 
   def fire_cmd(self, cmd, direct=False):
-    self.logger.debug("sent command : %s", cmd)
+    self.logger.debug("sent command : %s == %s", cmd, azur_cmds.commands[cmd])
     if direct:
-      code = self.queue.add(azur_cmds.commands[cmd].decode('ascii'), direct)
+      code = self.queue.add(azur_cmds.commands[cmd], direct)
       self.last = (cmd, self.friendlyReply(code, cmd))
       self.logger.debug("Reply is (%s, %s)", self.last[0].rstrip(), self.last[1].rtrip())
       return self.last[1]
     else:
-      self.queue.add(azur_cmds.commands[cmd].decode('ascii'), direct)
+      self.queue.add(azur_cmds.commands[cmd], direct)
 
   # typical call would be ('poweron', 1, False)
   @dbus.service.method(AZURSERVICE_IFACE, in_signature='sib', out_signature='s')

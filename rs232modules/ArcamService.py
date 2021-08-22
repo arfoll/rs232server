@@ -1,6 +1,4 @@
-#!/usr/bin/env python2
-
-# Copyright (C) 2011,2012,2013 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011-2020 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,10 +15,10 @@
 
 import dbus.service
 from dbus.mainloop.glib import DBusGMainLoop
-from SerialController import SerialController
-from BaseService import BaseService
+from .SerialController import SerialController
+from .BaseService import BaseService
 
-import arcam_cmds
+from . import arcam_cmds
 
 ARCAMSERVICE_IFACE = 'uk.co.madeo.rs232server.arcam'
 ARCAMSERVICE_OBJ_PATH = '/uk/co/madeo/rs232server/arcam'
@@ -42,8 +40,8 @@ class ArcamService(BaseService):
       self.logger.debug("Getting help!")
       return self.help()
     if (check):
-      val = self.queue.add(arcam_cmds.commands[cmd].decode('ascii'), check)
-      return val.decode('ascii')
+      val = self.queue.add(arcam_cmds.commands[cmd], check)
+      return val
     for i in range(0, repeat):
-      self.queue.add(arcam_cmds.commands[cmd].decode('ascii'), check)
+      self.queue.add(arcam_cmds.commands[cmd], check)
     return ""

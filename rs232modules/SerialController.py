@@ -1,6 +1,4 @@
-#!/usr/bin/env python2
-
-# Copyright (C) 2011,2012,2013 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011-2020 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,15 +13,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+import queue
 import sys
 import time
-import Queue
-import logging
 import serial
-import Shared
+
 from threading import Lock
 from threading import Thread
 from threading import Timer
+
+from . import Shared
 
 DELAY = 0.05
 MAXCMDS = 0
@@ -41,7 +41,7 @@ class SerialController:
     self.serial_lock = Lock()
 
     # set up queue and start queue monitoring thread
-    self.queue = Queue.Queue()
+    self.queue = queue.Queue()
     self.t = Thread(target=self.monitor)
     self.t.daemon = True
     self.t.start()
@@ -62,10 +62,11 @@ class SerialController:
       self.ser.read(waiting)
 
   def cmd(self, cmd, read=False):
+    self.serial_logger.debug ("cmd is: %s", cmd)
     try:
-      if cmd is not "clear":
+      if cmd != "clear":
         with self.serial_lock:
-          numBytes = self.ser.write(str(cmd))
+          numBytes = self.ser.write(cmd.encode('ascii'))
         self.serial_logger.debug("Wrote %d bytes", numBytes)
         self.serial_logger.debug (cmd.rstrip() + " called")
         if read:
@@ -85,6 +86,7 @@ class SerialController:
         self.ser.flush()
 
   def add(self, cmd, direct=False):
+    self.serial_logger.debug("cmd %s added to queue", cmd)
     if direct:
       # direct execution allows for return
       return self.cmd(cmd, True)

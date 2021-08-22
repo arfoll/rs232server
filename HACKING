@@ -27,4 +27,9 @@ This client is supposed to be light & dumb. It does nearly nothing, it's in C
 because dbus in C is a lot faster to initialise. The aim is for it to send a
 dbus message and then quit as quickly as possible (but not asynchronously as
 I'd like to get the return message!). In python this is relatively slow (1-2
-seconds on a Atom CPU)
+seconds on a 1st gen Atom CPU)
+
+Debugging
+
+just add the following to whatever line you are interested in
+import pdb; pdb.set_trace()
