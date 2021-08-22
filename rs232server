@@ -15,14 +15,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import sys
 import argparse
-import logging
 import configparser
 import dbus
-from gi.repository import GLib
+import importlib
+import logging
+import os
+import sys
+
 from dbus.mainloop.glib import DBusGMainLoop
+from gi.repository import GLib
 import rs232modules.Shared
 from rs232modules.BaseService import invalidtty
 
@@ -87,8 +89,11 @@ def main():
   for section in parser.sections():
     try:
       tty = parser.get(section, 'tty')
-      x = __import__('rs232modules.' + str(section), globals(), locals(), [section], 0)
-      service = eval('x.' + section)(tty, bus_name)
+      #x = __import__('rs232modules.' + str(section), globals(), locals(), [section], 0)
+      #service = eval('x.' + section)(tty, bus_name)
+      logger.debug("service is %s", str(section))
+      x = getattr(importlib.import_module("rs232modules." + section), section)
+      service = x(tty, bus_name)
       try:
         service.set_model(parser.get(section, 'model'))
       except Exception as e:

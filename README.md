@@ -81,7 +81,7 @@ sudo cp rs232server.service /usr/lib/systemd/system/
 sudo systemctl start rs232server
 ```
 
-The script requires python2, python-pyserial and dbus
+The script requires python3, python-pyserial and dbus
 
 To connect the Amplifier (Azur 340R), use a null modem cable to a serial port
 or USB->serial controller

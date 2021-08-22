@@ -51,7 +51,7 @@ build() {
 	msg "Starting build..."
 	cd ${_gitname}-build
 
-	python2 setup.py build
+	python setup.py build
 	cd miniclient/
 	./autogen.sh
 	./configure --prefix=$_prefix --exec-prefix=$_prefix
@@ -60,7 +60,7 @@ build() {
 
 package() {
 	cd ${_gitname}-build/
-	python2 setup.py install --root="$pkgdir/" --skip-build --optimize=1
+	python setup.py install --root="$pkgdir/" --skip-build --optimize=1
 	cd miniclient/
 	msg2 "Running make install" 
 	make DESTDIR="$pkgdir" install

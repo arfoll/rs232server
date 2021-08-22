@@ -13,15 +13,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+import queue
 import sys
 import time
-import queue
-import logging
 import serial
-from . import Shared
+
 from threading import Lock
 from threading import Thread
 from threading import Timer
+
+from . import Shared
 
 DELAY = 0.05
 MAXCMDS = 0
@@ -60,6 +62,7 @@ class SerialController:
       self.ser.read(waiting)
 
   def cmd(self, cmd, read=False):
+    self.serial_logger.debug ("cmd is: %s", cmd)
     try:
       if cmd != "clear":
         with self.serial_lock:
@@ -83,6 +86,7 @@ class SerialController:
         self.ser.flush()
 
   def add(self, cmd, direct=False):
+    self.serial_logger.debug("cmd %s added to queue", cmd)
     if direct:
       # direct execution allows for return
       return self.cmd(cmd, True)
