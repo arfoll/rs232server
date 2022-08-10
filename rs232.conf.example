@@ -22,3 +22,8 @@ model = KRL-32V
 [ArcamService]
 tty = /dev/ttyS1
 model = XXX
+
+[mqtt]
+host = mybrocker.lan
+port = 1883
+keepalive = 60

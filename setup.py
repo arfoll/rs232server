@@ -2,7 +2,7 @@
 from distutils.core import setup
 
 setup(name='rs232server',
-      version='0.3',
+      version='0.4',
       description='rs232 control of appliances',
       author='Brendan Le Foll',
       author_email='brendan@fridu.org',

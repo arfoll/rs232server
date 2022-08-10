@@ -76,6 +76,7 @@ class AzurService(BaseService):
   # typical call would be ('poweron', 1, False)
   @dbus.service.method(AZURSERVICE_IFACE, in_signature='sib', out_signature='s')
   def send_cmd(self, cmd, repeat, direct):
+    self.logger.debug("Called %s", cmd)
     if cmd == "help":
       self.logger.debug("Getting help!")
       return self.help()

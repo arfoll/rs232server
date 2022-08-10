@@ -5,6 +5,8 @@ Description = Starts rs232server
 Type=dbus
 BusName=uk.co.madeo.rs232server
 ExecStart=/usr/bin/rs232server
+User=brendan
+Group=brendan
 
 [Install]
 WantedBy = multi-user.target

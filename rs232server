@@ -22,6 +22,7 @@ import importlib
 import logging
 import os
 import sys
+import paho.mqtt.client as mqtt
 
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib
@@ -32,6 +33,8 @@ LOG_FILENAME = '/tmp/' + rs232modules.Shared.APP_NAME + '.log'
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 RS232SERVER_BUS_NAME = 'uk.co.madeo.' + rs232modules.Shared.APP_NAME
 DESCRIPTION = "Listen over dbus for commands to be sent over RS232"
+
+rs232_services = {}
 
 def configureLogging(verbose, dev, logger):
   if dev:
@@ -54,6 +57,14 @@ def configureLogging(verbose, dev, logger):
     ch.setLevel(logging.ERROR)
   ch.setFormatter(formatter)
   logger.addHandler(ch)
+
+def on_message(client, userdata, msg):
+  # TODO: Fix logger
+  print("Message =", msg.payload.decode('utf8'))
+  rs232_services['AzurService'].send_cmd(msg.payload.decode('utf8'), 1, False)
+
+def on_connect(client, userdata, msg, rc):
+  client.subscribe("rs232server/raw")
 
 def main():
   # parse CLI arguments
@@ -86,28 +97,42 @@ def main():
     logger.error('fatal dbus error: have you set up a dbus config?')
     exit(1)
 
+  # All the hacks!!
+  if parser.has_section('mqtt'):
+    client = mqtt.Client("rs232server_mqtt_client")
+    client.on_message = on_message
+    client.on_connect = on_connect
+    client.connect("cadmium.lan", 1883, 60)
+    client.loop_start()
+
   for section in parser.sections():
-    try:
-      tty = parser.get(section, 'tty')
-      logger.debug("service is %s", str(section))
-      x = getattr(importlib.import_module("rs232modules." + section), section)
-      service = x(tty, bus_name)
+    if parser.has_option(section, 'host'):
+      logger.debug("ignored mqtt stuff")
+    else:
       try:
-        service.set_model(parser.get(section, 'model'))
-      except Exception as e:
-        logger.debug('No model found in config file %s', str(e))
-      #if not issubclass(service, BaseService): 
-      #  raise Exception("Class is not subclass of BaseService")
-    except configparser.NoOptionError as e:
-      logger.error('%s in %s', str(e), str(readfiles)[1:-1])
-      exit(1)
-    except invalidtty as e:
-      logger.error('%s', str(e))
-      exit(1)
-    except:
-      logger.debug(sys.exc_info()[0])
-      logger.error('Check that %s is a valid service name', section)
-      exit(1)
+        tty = parser.get(section, 'tty')
+        logger.debug("service is %s", str(section))
+        x = getattr(importlib.import_module("rs232modules." + section), section)
+        rs232_services[section] = x(tty, bus_name)
+        try:
+          rs232_services[section].set_model(parser.get(section, 'model'))
+        except Exception as e:
+          logger.debug('No model found in config file %s', str(e))
+      except configparser.NoOptionError as e:
+        logger.error('%s in %s', str(e), str(readfiles)[1:-1])
+        exit(1)
+      except invalidtty as e:
+        logger.error('%s', str(e))
+        exit(1)
+      except:
+        logger.debug(sys.exc_info()[0])
+        logger.error('Check that %s is a valid service name', section)
+        exit(1)
+
+  logger.debug(rs232_services)
+  for service in rs232_services:
+    logger.debug("subscribing to: rs232server/"+service+"/cmd")
+    client.subscribe("rs232server/"+service+"/cmd")
 
   loop = GLib.MainLoop()
   loop.run()
