@@ -21,13 +21,14 @@ import dbus
 import importlib
 import logging
 import os
+import re
 import sys
-import paho.mqtt.client as mqtt
 
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib
 import rs232modules.Shared
 from rs232modules.BaseService import invalidtty
+from rs232modules.Mqtt import comm
 
 LOG_FILENAME = '/tmp/' + rs232modules.Shared.APP_NAME + '.log'
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -58,13 +59,18 @@ def configureLogging(verbose, dev, logger):
   ch.setFormatter(formatter)
   logger.addHandler(ch)
 
-def on_message(client, userdata, msg):
+def mqtt_msg_handler(topic, payload):
   # TODO: Fix logger
-  print("Message =", msg.payload.decode('utf8'))
-  rs232_services['AzurService'].send_cmd(msg.payload.decode('utf8'), 1, False)
+  cmd = payload.decode('utf8')
+  print(f'Topic = {topic}, Message = {cmd}')
 
-def on_connect(client, userdata, msg, rc):
-  client.subscribe("rs232server/raw")
+  m = re.search('rs232server/(.+?)/cmd', topic)
+  if m:
+    service = m.group(1)
+    rs232_services[service].send_cmd(cmd, 1, False)
+    print(f'Service {service} called')
+  else:
+    print('service error')
 
 def main():
   # parse CLI arguments
@@ -99,11 +105,7 @@ def main():
 
   # All the hacks!!
   if parser.has_section('mqtt'):
-    client = mqtt.Client("rs232server_mqtt_client")
-    client.on_message = on_message
-    client.on_connect = on_connect
-    client.connect("cadmium.lan", 1883, 60)
-    client.loop_start()
+    client = comm("cadmium.lan")
 
   for section in parser.sections():
     if parser.has_option(section, 'host'):
@@ -132,7 +134,7 @@ def main():
   logger.debug(rs232_services)
   for service in rs232_services:
     logger.debug("subscribing to: rs232server/"+service+"/cmd")
-    client.subscribe("rs232server/"+service+"/cmd")
+    client.register_handler("rs232server/"+service+"/cmd", service, mqtt_msg_handler)
 
   loop = GLib.MainLoop()
   loop.run()
