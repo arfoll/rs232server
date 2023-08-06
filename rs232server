@@ -88,8 +88,8 @@ def main():
                       help='enables more verbose output')
   parser.add_argument('--dev', '-d', action='store_true', dest='dev', default=False,
                       help='development mode disables some commands that could be dangerous. Read documentation before using')
-  parser.add_argument('--conf', '-c', action='store_true', dest='configfile', default='rs232.conf.example',
-                      help='path to configuration file')
+  parser.add_argument('--conf', '-c', action='store', dest='configfile', default='/etc/rs232.conf', nargs='?',
+                      help='path to configuration file, defaults to /etc/rs232.conf')
   args = parser.parse_args()
 
   # set up logging

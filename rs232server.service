@@ -4,7 +4,7 @@ Description = Starts rs232server
 [Service]
 Type=dbus
 BusName=uk.co.madeo.rs232server
-ExecStart=/usr/bin/rs232server
+ExecStart=/usr/bin/rs232server --conf /etc/rs232.conf
 User=brendan
 Group=brendan
 

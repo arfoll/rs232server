@@ -3,9 +3,9 @@ can be multiple services.
 
 There are currently four supported services in rs232server
 - AzurService - controls an Azur Amplifier/Receiver
-- LgtvService - controls an LG TV
-- PioneerService - controls a Pioneer TV set (KRL-32V)
-- ArcamService - controls an Arcam AVR-300 receiver
+- (deprecated) LgtvService - controls an LG TV
+- (deprecated) PioneerService - controls a Pioneer TV set (KRL-32V)
+- (deprecated) ArcamService - controls an Arcam AVR-300 receiver
 
 The aim are to make services inherit from BaseService so the actual service
 file contains very little but a little handling code for maybe the return codes
@@ -16,7 +16,7 @@ do with a good clean ;-)
 Dbus commands are received on the /uk/co/madeo/rs232server object. Each service
 then has its own interface that can be used to communicate with that service.
 
-miniclient
+# miniclient
 
 This client is supposed to be light & dumb. It does nearly nothing, it's in C
 because dbus in C is a lot faster to initialise. The aim is for it to send a
@@ -26,12 +26,7 @@ seconds on a 1st gen Atom CPU). it's using autotools because I wanted to check
 how bad it actually was, probably should move it to something sane like cmake
 at some point
 
-rs232client
-
-This is the python client, now deprecated, it's way too slow when used as a cli
-interface but for other uses could make more sense
-
-Debugging
+# Debugging
 
 just add the following to whatever line you are interested in
 ```{python}
