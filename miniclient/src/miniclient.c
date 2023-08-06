@@ -120,7 +120,7 @@ send_message_via_dbus (int repeat, char *obj, char *iface, char *method, const c
         }
       } while (dbus_message_iter_has_next(&args));
     }
-  } else if (reply == NULL && direct) {
+  } else if (reply == NULL && direct && strncmp(param, "clear", 5) != 0) {
     fprintf(stderr, "We got a dbus timeout, no reply received :(\n");
   }
 
@@ -132,9 +132,11 @@ send_message_via_dbus (int repeat, char *obj, char *iface, char *method, const c
   dbus_connection_unref (connection);
   dbus_error_free (&error);
 
+#if 0
   /* make sure the line is clear when sending repeat messages and not collecting responses over serial */
   if (!direct)
     send_message_via_dbus (1, obj, iface, method, "clear");
+#endif
 
   return ret;
 }
