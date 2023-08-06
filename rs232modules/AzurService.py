@@ -23,15 +23,13 @@ from . import azur_cmds
 AZURSERVICE_IFACE = 'uk.co.madeo.rs232server.azur'
 AZURSERVICE_OBJ_PATH = '/uk/co/madeo/rs232server/azur'
 
-BAUD_RATE = 9600
-STRIPPING_ERROR = 999
-
 class AzurService(BaseService):
-
+  BAUD_RATE = 9600
+  STRIPPING_ERROR = 9999
   last = ("none", "-0")
 
   def __init__(self, tty, bus_name):
-    BaseService.__init__(self, bus_name, AZURSERVICE_OBJ_PATH, tty, BAUD_RATE, azur_cmds)
+    BaseService.__init__(self, bus_name, AZURSERVICE_OBJ_PATH, tty, self.BAUD_RATE, azur_cmds)
 
   def checkReturnValueInt(self, val):
     try:
@@ -39,7 +37,7 @@ class AzurService(BaseService):
     except:
       return -100
 
-  def findKey(self, val):
+  def findErrorKey(self, val):
     try:
       return [k for k, v in azur_cmds.errors.items() if v == val][0]
     except:
@@ -47,26 +45,26 @@ class AzurService(BaseService):
 
   def stripErrorCode(self, code):
     try:
-      code = code.replace('#', '')
-      code = code.replace(',', '')
-      code = code.replace('\n', '')
+      code = code.replace(b'#', b'')
+      code = code.replace(b',', b'')
+      code = code.replace(b'\r', b'')
       return int(code)
     except:
       self.logger.warning("Stripping error for %s", code)
-      return STRIPPING_ERROR
+      return self.STRIPPING_ERROR
 
-  def friendlyReply(self, code, cmd):
-    self.logger.debug("Reply code pre-stripping %s", code)
-    if self.findKey(code):
+  def friendlyReply(self, codearr, cmd):
+    self.logger.debug("Reply code pre-stripping %s", codearr)
+    self.logger.debug("Code is of type %s, first elem is %s", type(codearr), type(codearr[0]))
+    code = codearr[0]
+    if self.findErrorKey(code):
       return self.stripErrorCode(code)
-    else:
-      self.logger.debug("Code is of type %s, first elem is %s", type(code), type(code[0]))
-      try:
-        return code[0].replace(azur_cmds.replies[cmd], b'').rstrip()
-      except:
-        self.logger.warning("Failed to parse return code %s", code[0])
-        return "none"
-      #return code
+
+    try:
+      return code.replace(azur_cmds.replies[cmd], b'').rstrip()
+    except:
+      self.logger.warning("Failed to parse return code %s", code)
+      return "none"
 
   def fire_cmd(self, cmd, read=False):
     self.logger.debug("sent command : %s == %s", cmd, azur_cmds.commands[cmd])

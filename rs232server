@@ -16,13 +16,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
-import configparser
 import dbus
 import importlib
 import logging
 import os
 import re
 import sys
+import yaml
 
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib
@@ -31,9 +31,9 @@ from rs232modules.BaseService import invalidtty
 from rs232modules.Mqtt import comm
 
 LOG_FILENAME = '/tmp/' + rs232modules.Shared.APP_NAME + '.log'
-LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 RS232SERVER_BUS_NAME = 'uk.co.madeo.' + rs232modules.Shared.APP_NAME
-DESCRIPTION = "Listen over dbus for commands to be sent over RS232"
+DESCRIPTION = 'Listen over dbus for commands to be sent over RS232'
 
 rs232_services = {}
 
@@ -72,6 +72,15 @@ def mqtt_msg_handler(topic, payload):
   else:
     print('service error')
 
+def loadConfiguration(configfile, logger):
+  cfg = None
+
+  with open(configfile, 'r') as stream:
+    cfg = yaml.safe_load(stream)
+    logger.debug('using config file: %s', configfile)
+
+  return cfg
+
 def main():
   # parse CLI arguments
   parser = argparse.ArgumentParser(description=DESCRIPTION)
@@ -79,65 +88,53 @@ def main():
                       help='enables more verbose output')
   parser.add_argument('--dev', '-d', action='store_true', dest='dev', default=False,
                       help='development mode disables some commands that could be dangerous. Read documentation before using')
+  parser.add_argument('--conf', '-c', action='store_true', dest='configfile', default='rs232.conf.example',
+                      help='path to configuration file')
   args = parser.parse_args()
 
   # set up logging
   logger = logging.getLogger(rs232modules.Shared.APP_NAME)
   configureLogging(args.verbose, args.dev, logger)
 
-  # read configuration file according to priorities
-  parser = configparser.ConfigParser()
-  filenames = [rs232modules.Shared.SYS_CONF, os.path.expanduser(rs232modules.Shared.USER_CONF), rs232modules.Shared.DEV_CONF]
-  readfiles = parser.read(filenames)
-  logger.debug('config files read: ' + str(readfiles)[1:-1])
-  if not readfiles:
-    logger.error('failed to read any configuration files. Looked in ' + str(filenames)[1:-1])
-    exit(1)
+  # read configuration
+  cfg = loadConfiguration(args.configfile, logger)
 
-  # start dbus mainloop
-  DBusGMainLoop(set_as_default=True)
-  try:
-    bus_name = dbus.service.BusName(RS232SERVER_BUS_NAME, bus=dbus.SystemBus())
-  except:
-    logger.info(sys.exc_info()[0])
-    logger.error('fatal dbus error: have you set up a dbus config?')
-    exit(1)
+  # Dbus is actually mandatory
+  if 'dbus' in cfg['comm']:
+    # start dbus mainloop
+    DBusGMainLoop(set_as_default=True)
+    try:
+      bus_name = dbus.service.BusName(RS232SERVER_BUS_NAME, bus=dbus.SystemBus())
+    except:
+      logger.info(sys.exc_info()[0])
+      logger.error('fatal dbus error: have you set up a dbus config?')
+      exit(1)
 
-  # All the hacks!!
-  if parser.has_section('mqtt'):
-    client = comm("cadmium.lan")
-
-  for section in parser.sections():
-    if parser.has_option(section, 'host'):
-      logger.debug("ignored mqtt stuff")
-    else:
+  for servicename in cfg['modules']:
+      service = cfg['modules'][servicename]
       try:
-        tty = parser.get(section, 'tty')
-        logger.debug("service is %s", str(section))
-        x = getattr(importlib.import_module("rs232modules." + section), section)
-        rs232_services[section] = x(tty, bus_name)
-        try:
-          rs232_services[section].set_model(parser.get(section, 'model'))
-        except Exception as e:
-          logger.debug('No model found in config file %s', str(e))
-      except configparser.NoOptionError as e:
-        logger.error('%s in %s', str(e), str(readfiles)[1:-1])
-        exit(1)
+        tty = service['tty']
+        logger.debug('service is %s', servicename)
+        x = getattr(importlib.import_module('rs232modules.' + servicename), servicename)
+        rs232_services[servicename] = x(tty, bus_name)
       except invalidtty as e:
         logger.error('%s', str(e))
         exit(1)
       except:
-        logger.debug(sys.exc_info()[0])
-        logger.error('Check that %s is a valid service name', section)
+        logger.debug(sys.exc_info())
+        logger.error('Check that %s is a valid service name', servicename)
         exit(1)
 
-  logger.debug(rs232_services)
-  for service in rs232_services:
-    logger.debug("subscribing to: rs232server/"+service+"/cmd")
-    client.register_handler("rs232server/"+service+"/cmd", service, mqtt_msg_handler)
+  if 'mqtt' in cfg['comm']:
+    client = comm(cfg['comm']['mqtt']['brocker'])
+
+    logger.debug(rs232_services)
+    for service in rs232_services:
+      logger.debug('subscribing to: rs232server/'+service+'/cmd')
+      client.register_handler('rs232server/'+service+'/cmd', service, mqtt_msg_handler)
 
   loop = GLib.MainLoop()
   loop.run()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main())

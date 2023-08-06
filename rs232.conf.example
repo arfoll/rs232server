@@ -1,12 +1,16 @@
+## Note: Format changed from ConfigParser -> Yaml in 1.0
+
 # it is recommend you use /dev/serial/by-path/ especially
 # if you use multiple usb -> serial adapters
 
 # Udev rules can also be used, but require more configuration
 
-[AzurService]
-tty = /dev/ttyUSB0
-
-[mqtt]
-host = mybrocker.lan
-port = 1883
-keepalive = 60
+comm:
+  dbus:
+  mqtt:
+      brocker: 'mybrocker.lan'
+      port: '1883'
+      keepalive: '60'
+modules:
+  AzurService:
+      tty: '/dev/ttyUSB0'
