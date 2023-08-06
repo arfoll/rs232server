@@ -77,25 +77,27 @@ class AzurService(BaseService):
       self.ser.cmd(azur_cmds.commands[cmd], read)
 
   # typical call would be ('poweron', 1, False)
+  # a direct command will receive a response
   @dbus.service.method(AZURSERVICE_IFACE, in_signature='sib', out_signature='s')
   def send_cmd(self, cmd, repeat, direct):
-    self.logger.debug("Called %s, direct=%r", cmd, direct)
+    self.logger.debug("Called %s, direct=%r, repeat=%d", cmd, direct, repeat)
     if cmd == "help":
       self.logger.debug("Getting help!")
       return self.help()
 
-    # Ignore the direct flag
-    val = self.fire_cmd(cmd, True)
-    self.logger.debug("val returned is %s", val)
-    return val
-   
-#    for i in range(0, repeat):
-#      if i == (repeat-1) and direct:
-#        val = self.fire_cmd(cmd, direct)
-#        logger.debug("val returned is %s", val)
-#        return val
-#      self.fire_cmd(cmd, direct)
-#    return ""
+    # repeat is a dbus.Int32 so let's cast it
+    repeat = int(repeat)
+    for i in range(0, repeat):
+      self.logger.debug("called %s %d out of %d", cmd, i, repeat)
+      if i == (repeat-1):
+        # The last call is always considered direct
+        val = self.fire_cmd(cmd, True)
+        self.logger.debug("val returned is %s", val)
+        return val
+      self.fire_cmd(cmd, False)
+
+    self.logger.error("Improbable exit path from send_cmd")
+    exit(3)
 
   @dbus.service.method(AZURSERVICE_IFACE)
   def clear(self):
