@@ -29,9 +29,7 @@ class invalidtty(Exception):
 
 class BaseService(dbus.service.Object):
 
-  model = None
-
-  def __init__(self, bus_name, obj_path, tty, baud_rate, readval, cmds):
+  def __init__(self, bus_name, obj_path, tty, baud_rate, cmds):
     dbus.service.Object.__init__(self, bus_name, obj_path)
     self.logger = logging.getLogger(Shared.APP_NAME + '.' + self.__class__.__name__ )
     self.cmds = cmds
@@ -40,7 +38,7 @@ class BaseService(dbus.service.Object):
     except:
       raise invalidtty("Could not open " + tty + ", check it is valid and that the user has permission to use it.")
 
-    self.ser = SerialController(ser, readval)
+    self.ser = SerialController(ser)
     self.logger.info("Started service on %s", obj_path)
 
   def help(self):
@@ -49,13 +47,6 @@ class BaseService(dbus.service.Object):
       string += '\n' + p
     # strip first character
     return string[1:]
-
-  def set_model(self, model):
-    self.logger.debug("Model set to %s", model)
-    self.model = model
-
-  def get_model(self):
-     return self.model
 
   # TODO: make these @dbus methods that are inherited from
   def send_cmd(self, cmd, repeat, check):

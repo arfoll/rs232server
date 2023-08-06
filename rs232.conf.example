@@ -5,23 +5,6 @@
 
 [AzurService]
 tty = /dev/ttyUSB0
-model = 340R
-
-[Azur1Service]
-tty = /dev/ttyUSB0
-model = 351R
-
-[LgtvService]
-tty = /dev/ttyUSB1
-model = MD27
-
-[PioneerService]
-tty = /dev/ttyS0
-model = KRL-32V
-
-[ArcamService]
-tty = /dev/ttyS1
-model = XXX
 
 [mqtt]
 host = mybrocker.lan

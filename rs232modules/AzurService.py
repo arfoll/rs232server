@@ -25,14 +25,13 @@ AZURSERVICE_OBJ_PATH = '/uk/co/madeo/rs232server/azur'
 
 BAUD_RATE = 9600
 STRIPPING_ERROR = 999
-READVAL = 50
 
 class AzurService(BaseService):
 
   last = ("none", "-0")
 
   def __init__(self, tty, bus_name):
-    BaseService.__init__(self, bus_name, AZURSERVICE_OBJ_PATH, tty, BAUD_RATE, READVAL, azur_cmds)
+    BaseService.__init__(self, bus_name, AZURSERVICE_OBJ_PATH, tty, BAUD_RATE, azur_cmds)
 
   def checkReturnValueInt(self, val):
     try:
@@ -61,43 +60,44 @@ class AzurService(BaseService):
     if self.findKey(code):
       return self.stripErrorCode(code)
     else:
-      return code.replace(azur_cmds.replies[cmd], '')
+      self.logger.debug("Code is of type %s, first elem is %s", type(code), type(code[0]))
+      try:
+        return code[0].replace(azur_cmds.replies[cmd], b'').rstrip()
+      except:
+        self.logger.warning("Failed to parse return code %s", code[0])
+        return "none"
+      #return code
 
-  def fire_cmd(self, cmd, direct=False):
+  def fire_cmd(self, cmd, read=False):
     self.logger.debug("sent command : %s == %s", cmd, azur_cmds.commands[cmd])
-    if direct:
-      code = self.ser.cmd(azur_cmds.commands[cmd], direct)
+    if read:
+      code = self.ser.cmd(azur_cmds.commands[cmd], read)
       self.last = (cmd, self.friendlyReply(code, cmd))
-      self.logger.debug("Reply is (%s, %s)", self.last[0].rstrip(), self.last[1].rtrip())
+      self.logger.debug("Reply is (%s, %s)", self.last[0], self.last[1])
       return self.last[1]
     else:
-      self.ser.cmd(azur_cmds.commands[cmd], direct)
+      self.ser.cmd(azur_cmds.commands[cmd], read)
 
   # typical call would be ('poweron', 1, False)
   @dbus.service.method(AZURSERVICE_IFACE, in_signature='sib', out_signature='s')
   def send_cmd(self, cmd, repeat, direct):
-    self.logger.debug("Called %s", cmd)
+    self.logger.debug("Called %s, direct=%r", cmd, direct)
     if cmd == "help":
       self.logger.debug("Getting help!")
       return self.help()
-    # my CA 640R is a little buggy so we resend everything twice if we have this model
-    if (self.get_model() == "640R"):
-      repeat *= 2
-    for i in range(0, repeat):
-      # volume level check code
-      if (self.last[0] == "volup"):
-        if (int(self.last[1]) > int(-30)):
-          self.logger.error("Volume is too high!")
-          return "WARNING: VOLUME is really high..."
-        else:
-          self.logger.debug("Volume is %s, keep playing...", self.last[1])
-      # repeat if required
-      if i == (repeat-1) and direct:
-        val = self.fire_cmd(cmd, direct)
-        #logger.debug("val returned is %s", val)
-        return val
-      self.fire_cmd(cmd, direct)
-    return ""
+
+    # Ignore the direct flag
+    val = self.fire_cmd(cmd, True)
+    self.logger.debug("val returned is %s", val)
+    return val
+   
+#    for i in range(0, repeat):
+#      if i == (repeat-1) and direct:
+#        val = self.fire_cmd(cmd, direct)
+#        logger.debug("val returned is %s", val)
+#        return val
+#      self.fire_cmd(cmd, direct)
+#    return ""
 
   @dbus.service.method(AZURSERVICE_IFACE)
   def clear(self):

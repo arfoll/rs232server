@@ -1,4 +1,4 @@
-# Copyright (C) 2011-2020 Brendan Le Foll <brendan@fridu.net>
+# Copyright (C) 2011-2023 Brendan Le Foll <brendan@fridu.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,13 +19,9 @@ import serial
 
 from . import Shared
 
-DELAY = 0.05
-MAXCMDS = 0
-STRIPPING_ERROR = 999
-
 class SerialController:
 
-  def __init__(self, ser, readval):
+  def __init__(self, ser):
     self.serial_logger = logging.getLogger(Shared.APP_NAME + '.' + self.__class__.__name__)
 
     self.ser = ser
@@ -33,7 +29,6 @@ class SerialController:
     self.ser.flushOutput()
     self.serial_logger.debug("Initialised %s with baud rate %d", ser.name, ser.baudrate)
 
-    self.readval = readval
     self.serial_logger.debug("Serial is %s", str(ser))
 
   def clear(self):
@@ -49,13 +44,13 @@ class SerialController:
     self.serial_logger.debug ("cmd is: %s", cmd)
     try:
       if cmd != "clear":
-        numBytes = self.ser.write(cmd.encode('ascii'))
+        numBytes = self.ser.write(cmd)
         self.serial_logger.debug("Wrote %d bytes", numBytes)
-        self.serial_logger.debug (cmd.rstrip() + " called")
+        self.serial_logger.debug ("%s called", cmd)
         if read:
-          code = self.ser.read(self.readval)
+          code = self.ser.readlines()
           return code
       else:
         self.clear()
     except:
-      self.serial_logger.error ("%s call failed", cmd.rstrip())
+      self.serial_logger.error ("%s call failed", cmd)
